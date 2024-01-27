@@ -7,6 +7,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MikroOrmConfig } from './config/mikro-orm.config';
 import { CommonModule } from './common/common.module';
 import { UsersModule } from './users/users.module';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UsersModule } from './users/users.module';
     }),
     CommonModule,
     UsersModule,
+    JwtModule,
   ],
   providers: [AppService],
 })
