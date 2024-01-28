@@ -55,7 +55,7 @@ export function config(): IConfig {
       secure: process.env.EMAIL_SECURE === 'true',
       auth: {
         user: process.env.EMAIL_USER,
-        password: process.env.EMAIL_PASSWORD,
+        pass: process.env.EMAIL_PASSWORD,
       },
     },
     db: definePGConfig({

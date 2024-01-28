@@ -8,6 +8,7 @@ import { MikroOrmConfig } from './config/mikro-orm.config';
 import { CommonModule } from './common/common.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from './jwt/jwt.module';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -19,11 +20,11 @@ import { JwtModule } from './jwt/jwt.module';
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: MikroOrmConfig,
-      
     }),
     CommonModule,
     UsersModule,
     JwtModule,
+    MailerModule,
   ],
   providers: [AppService],
 })

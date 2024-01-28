@@ -1,6 +1,6 @@
 interface IEmailAuth {
   user: string;
-  password: string;
+  pass: string;
 }
 
 export interface IEmailConfig {
