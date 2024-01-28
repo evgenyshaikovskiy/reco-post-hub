@@ -14,6 +14,7 @@ async function bootstrap() {
     httpsOptions,
   });
 
+  app.enableCors({ origin: true });
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(process.env.PORT);
 }
