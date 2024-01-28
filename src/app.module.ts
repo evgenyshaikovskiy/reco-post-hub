@@ -9,6 +9,7 @@ import { CommonModule } from './common/common.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from './jwt/jwt.module';
 import { MailerModule } from './mailer/mailer.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MailerModule } from './mailer/mailer.module';
     UsersModule,
     JwtModule,
     MailerModule,
+    AuthModule,
   ],
   providers: [AppService],
 })
