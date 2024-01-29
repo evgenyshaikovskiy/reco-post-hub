@@ -3,6 +3,7 @@ import { SignUpDto } from './dtos/sign-up.dto';
 import { SignInDto } from './dtos/sign-in.dto';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto } from './dtos/refresh-token.dto';
+import { LogoutDto } from './dtos/log-out.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -36,5 +37,10 @@ export class AuthController {
     } catch (error) {
       return error;
     }
+  }
+
+  @Get('/logout')
+  public async logout(@Body() dto: LogoutDto) {
+    return await this.authService.logout(dto.refreshToken);
   }
 }
