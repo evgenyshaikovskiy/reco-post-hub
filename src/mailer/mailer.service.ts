@@ -44,7 +44,7 @@ export class MailerService {
     // TODO: change localhost to suitable domain
     const html = this.templates.confirmation({
       name,
-      link: `localhost:5000/auth/confirm/${token}`,
+      link: `https://localhost:5000/auth/confirm/${token}`,
     });
 
     this.sendEmail(email, subject, html, 'A new confirmation was email sent');

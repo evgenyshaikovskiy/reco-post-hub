@@ -1,4 +1,3 @@
-import { Dictionary, EntityRepository } from '@mikro-orm/core';
 import {
   BadRequestException,
   ConflictException,
@@ -13,6 +12,7 @@ import { isNull, isUndefined } from './utils/validation.util';
 import slugify from 'slugify';
 import { IMessage } from './interfaces/message.interface';
 import { v4 } from 'uuid';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CommonService {
@@ -30,7 +30,7 @@ export class CommonService {
    * Validates an entities with the class-validator library
    * @param entity entity to validate
    */
-  public async validateEntity(entity: Dictionary): Promise<void> {
+  public async validateEntity(entity: object): Promise<void> {
     const errors = await validate(entity);
     const messages: string[] = [];
 
@@ -48,7 +48,7 @@ export class CommonService {
    * @param entity - founded entity
    * @param name - entity name
    */
-  public checkEntityExistence<T extends Dictionary>(
+  public checkEntityExistence<T extends object>(
     entity: T | null | undefined,
     name: string,
   ): void {
@@ -59,23 +59,21 @@ export class CommonService {
 
   /**
    * Save entity
-   * @param repo - repository for entity 
+   * @param repo - repository for entity
    * @param entity - entity to save
-   * @param isNew - indicates whether entity is new 
+   * @param isNew - indicates whether entity is new
    */
-  public async saveEntity<T extends Dictionary>(
-    repo: EntityRepository<T>,
+  public async saveEntity<T extends object>(
+    repo: Repository<T>,
     entity: T,
     isNew = false,
   ): Promise<void> {
     await this.validateEntity(entity);
-
-    const manager = repo.getEntityManager();
     if (isNew) {
-      manager.persist(entity);
+      await repo.save(entity);
+    } else {
+      await this.throwDuplicateError(repo.save(entity));
     }
-
-    await this.throwDuplicateError(manager.flush());
   }
 
   /**
@@ -83,13 +81,11 @@ export class CommonService {
    * @param repo - repository for entity
    * @param entity - entity
    */
-  public async removeEntity<T extends Dictionary>(
-    repo: EntityRepository<T>,
+  public async removeEntity<T extends object>(
+    repo: Repository<T>,
     entity: T,
   ): Promise<void> {
-    await this.throwInternalError(
-      repo.getEntityManager().removeAndFlush(entity),
-    );
+    await this.throwInternalError(repo.delete(entity));
   }
 
   /**

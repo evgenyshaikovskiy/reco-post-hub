@@ -1,4 +1,4 @@
-import { IsString, Length, Matches, ValidateIf } from 'class-validator';
+import { IsBoolean, IsString, Length, Matches, ValidateIf } from 'class-validator';
 import { NAME_REGEX, SLUG_REGEX } from 'src/common/consts/regex.const';
 import { isUndefined, isNull } from 'src/common/utils/validation.util';
 
@@ -24,4 +24,7 @@ export abstract class UpdateUserDto {
       !isUndefined(o.name) || isUndefined(o.username) || isNull(o.username),
   )
   public name?: string;
+
+  @IsBoolean()
+  public confirmed?: boolean;
 }

@@ -1,23 +1,21 @@
-import { Cascade, Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { IBlacklistedToken } from '../interfaces/blacklisted-token.interface';
-import { UserEntity } from 'src/users/entities/user.entity';
 
-@Entity({ tableName: 'blacklisted_tokens' })
-@Unique({ properties: ['tokenId', 'user'] })
+@Entity()
+@Unique(['tokenId', 'userId'])
 export class BlacklistedTokenEntity implements IBlacklistedToken {
-  @Property({
-    primary: true,
-    columnType: 'uuid',
-  })
+  @PrimaryGeneratedColumn('uuid')
   tokenId: string;
 
-  @ManyToOne({
-    entity: () => UserEntity,
-    cascade: [Cascade.REMOVE],
-    primary: true,
-  })
-  user: UserEntity;
+  @Column('numeric')
+  userId: number;
 
-  @Property({ onCreate: () => new Date() })
+  @CreateDateColumn()
   createdAt: Date;
 }

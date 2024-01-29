@@ -3,13 +3,13 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { validationSchema } from './config/config.schema';
 import { config } from './config';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { MikroOrmConfig } from './config/mikro-orm.config';
 import { CommonModule } from './common/common.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from './jwt/jwt.module';
 import { MailerModule } from './mailer/mailer.module';
 import { AuthModule } from './auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmConfig } from './config/typeorm.factory';
 
 @Module({
   imports: [
@@ -18,9 +18,9 @@ import { AuthModule } from './auth/auth.module';
       validationSchema,
       load: [config],
     }),
-    MikroOrmModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useClass: MikroOrmConfig,
+      useClass: TypeOrmConfig,
     }),
     CommonModule,
     UsersModule,

@@ -1,4 +1,3 @@
-import { Embedded, Entity, PrimaryKey, Property } from '@mikro-orm/core';
 import { IUser } from '../interfaces/user.interface';
 import { IsBoolean, IsEmail, IsString, Length, Matches } from 'class-validator';
 import {
@@ -7,13 +6,20 @@ import {
   SLUG_REGEX,
 } from 'src/common/consts/regex.const';
 import { CredentialsEmbeddable } from '../embeddables/credentials.embeddable';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-@Entity({ tableName: 'users' })
+@Entity()
 export class UserEntity implements IUser {
-  @PrimaryKey()
+  @PrimaryGeneratedColumn('increment')
   public id: number;
 
-  @Property({ columnType: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   @IsString()
   @Length(3, 100)
   @Matches(NAME_REGEX, {
@@ -21,7 +27,7 @@ export class UserEntity implements IUser {
   })
   public name: string;
 
-  @Property({ columnType: 'varchar', length: 106 })
+  @Column({ type: 'varchar', length: 106 })
   @IsString()
   @Length(3, 106)
   @Matches(SLUG_REGEX, {
@@ -29,28 +35,28 @@ export class UserEntity implements IUser {
   })
   public username: string;
 
-  @Property({ columnType: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255 })
   @IsString()
   @IsEmail()
   @Length(5, 255)
   public email: string;
 
-  @Property({ columnType: 'varchar', length: 60 })
+  @Column({ type: 'varchar', length: 60 })
   @IsString()
   @Length(59, 60)
   @Matches(BCRYPT_HASH)
   public password: string;
 
-  @Property({ columnType: 'boolean', default: false })
+  @Column({ type: 'boolean', default: false })
   @IsBoolean()
   public confirmed: true | false = false;
 
-  @Embedded(() => CredentialsEmbeddable)
+  @Column(() => CredentialsEmbeddable)
   public credentials: CredentialsEmbeddable = new CredentialsEmbeddable();
 
-  @Property({ onCreate: () => new Date() })
-  public createdAt: Date = new Date();
+  @CreateDateColumn()
+  public createdAt: Date;
 
-  @Property({ onUpdate: () => new Date() })
+  @UpdateDateColumn()
   public updatedAt: Date = new Date();
 }

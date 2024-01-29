@@ -1,19 +1,23 @@
-import { Embeddable, Property } from "@mikro-orm/core";
-import { ICredentials } from "../interfaces/credentials.interface";
-import dayjs from "dayjs";
+// import { Embeddable, Property } from "@mikro-orm/core";
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { ICredentials } from '../interfaces/credentials.interface';
+import dayjs from 'dayjs';
 
-@Embeddable()
+@Entity()
 export class CredentialsEmbeddable implements ICredentials {
-  @Property({ default: 0})
+  @PrimaryGeneratedColumn('uuid')
+  public id: string;
+
+  @Column({ type: 'numeric' })
   public version = 0;
 
-  @Property({ default: ''})
-  public lastPassword = '';
+  @Column()
+  public lastPassword: string = '';
 
-  @Property({ default: dayjs().unix() })
+  @Column({ default: dayjs().unix() })
   public passwordUpdatedAt: number = dayjs().unix();
 
-  @Property({ default: dayjs().unix() })
+  @Column({ default: dayjs().unix() })
   public updatedAt: number = dayjs().unix();
 
   public updatePassword(password: string): void {

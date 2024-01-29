@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import {
   Injectable,
   Logger,
@@ -11,7 +10,7 @@ import {
 export class AppService implements OnModuleInit, OnModuleDestroy {
   private readonly loggerService: LoggerService;
 
-  constructor(private readonly orm: MikroORM) {
+  constructor() {
     this.loggerService = new Logger(AppService.name);
   }
 
@@ -20,8 +19,6 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
   }
 
   public async onModuleDestroy() {
-    this.loggerService.log('Closing database connection');
-    await this.orm.close();
-    this.loggerService.log('Closed database.');
+    this.loggerService.log('AppModule destroyed.');
   }
 }

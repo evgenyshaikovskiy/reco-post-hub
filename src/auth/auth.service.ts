@@ -1,11 +1,9 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { BlacklistedTokenEntity } from './entities/blacklisted-token.entity';
-import { EntityRepository } from '@mikro-orm/core';
 import { CommonService } from 'src/common/common.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from 'src/jwt/jwt.service';
@@ -22,15 +20,15 @@ import dayjs from 'dayjs';
 import { IRefreshToken } from 'src/jwt/interfaces/refresh-token.interface';
 import { EmailDto } from './dtos/email.dto';
 import { isNull, isUndefined } from 'src/common/utils/validation.util';
-import { ResetPasswordDto } from './dtos/reset-password.dto';
-import { IEmailToken } from 'src/jwt/interfaces/email-token.interface';
 import { ChangePasswordDto } from './dtos/change-password.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(BlacklistedTokenEntity)
-    private readonly blacklistedTokensRepository: EntityRepository<BlacklistedTokenEntity>,
+    private readonly blacklistedTokensRepository: Repository<BlacklistedTokenEntity>,
     private readonly commonService: CommonService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -38,16 +36,24 @@ export class AuthService {
   ) {}
 
   public async signUp(dto: SignUpDto, domain?: string): Promise<IMessage> {
-    const { name, email, password, passwordConfirmation } = dto;
+    const { name, email, password, username, passwordConfirmation } = dto;
     this._comparePasswords(password, passwordConfirmation);
-    const user = await this.usersService.create(email, name, password);
+    const user = await this.usersService.create(
+      email,
+      name,
+      username,
+      password,
+    );
     const confirmationToken = await this.jwtService.generateToken(
       user,
       TokenTypeEnum.CONFIRMATION,
       domain,
     );
+
     this.mailerService.sendConfirmationEmail(user, confirmationToken);
-    return this.commonService.generateMessage('Registration successful');
+    return this.commonService.generateMessage(
+      'Registration successful. Check your email for verification.',
+    );
   }
 
   public async singIn(dto: SignInDto, domain?: string): Promise<IAuthResult> {
@@ -122,16 +128,17 @@ export class AuthService {
     return this.commonService.generateMessage('Reset password email sent');
   }
 
-  public async resetPassword(dto: ResetPasswordDto): Promise<IMessage> {
-    const { password, passwordConfirmation, resetToken } = dto;
-    const { id, version } = await this.jwtService.verifyToken<IEmailToken>(
-      resetToken,
-      TokenTypeEnum.RESET_PASSWORD,
-    );
-    this._comparePasswords(password, passwordConfirmation);
-    await this.usersService.resetPassword(id, version, password);
-    return this.commonService.generateMessage('Password reset successful');
-  }
+  // TODO: add dto and refactor method logic
+  // public async resetPassword(dto: ResetPasswordDto): Promise<IMessage> {
+  //   const { password, passwordConfirmation, resetToken } = dto;
+  //   const { id, version } = await this.jwtService.verifyToken<IEmailToken>(
+  //     resetToken,
+  //     TokenTypeEnum.RESET_PASSWORD,
+  //   );
+  //   this._comparePasswords(password, passwordConfirmation);
+  //   await this.usersService.resetPassword(id, version, password);
+  //   return this.commonService.generateMessage('Password reset successful');
+  // }
 
   public async changePassword(
     userId: number,
@@ -148,12 +155,23 @@ export class AuthService {
     return { user, accessToken, refreshToken };
   }
 
+  public async confirmUserEmail(confirmationToken: string) {
+    const result = await this.jwtService.verifyToken(
+      confirmationToken,
+      TokenTypeEnum.CONFIRMATION,
+    );
+
+    const userId = result.id;
+
+    return await this.usersService.update(userId, { confirmed: true });
+  }
+
   private async _blacklistToken(
     userId: number,
     tokenId: string,
   ): Promise<void> {
     const blacklistedToken = this.blacklistedTokensRepository.create({
-      user: userId,
+      userId,
       tokenId,
     });
     await this.commonService.saveEntity(
@@ -168,8 +186,10 @@ export class AuthService {
     tokenId: string,
   ): Promise<void> {
     const count = await this.blacklistedTokensRepository.count({
-      user: userId,
-      tokenId,
+      where: {
+        tokenId,
+        userId,
+      },
     });
 
     if (count > 0) {

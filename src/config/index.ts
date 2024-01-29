@@ -1,5 +1,3 @@
-import { LoadStrategy } from '@mikro-orm/core';
-import { defineConfig as definePGConfig } from '@mikro-orm/postgresql';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { IConfig } from './interfaces/config.interface';
@@ -14,16 +12,6 @@ export function config(): IConfig {
     join(__dirname, '..', '..', 'keys/private.key'),
     'utf-8',
   );
-
-  const dbOptions = {
-    entities: ['dist/**/*.entity.js', 'dist/**/*.embeddable.js'],
-    entitiesTs: ['src/**/*.entity.ts', 'src/**/*.embeddable.ts'],
-    loadStrategy: LoadStrategy.JOINED,
-    allowGlobalContext: true,
-    driverOptions: {
-      connection: { ssl: true },
-    },
-  };
 
   const parseIntRadix = 10;
   return {
@@ -58,9 +46,14 @@ export function config(): IConfig {
         pass: process.env.EMAIL_PASSWORD,
       },
     },
-    db: definePGConfig({
-      clientUrl: process.env.DATABASE_URL,
-      ...dbOptions,
-    }),
+    db: {
+      type: 'postgres',
+      url: process.env.DB_URL,
+      port: parseInt(process.env.DB_PORT, parseIntRadix),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      autoLoadEntities: true,
+      synchronize: true,
+    },
   };
 }
