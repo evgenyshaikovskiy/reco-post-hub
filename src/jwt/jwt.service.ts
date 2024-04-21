@@ -153,9 +153,9 @@ export class JwtService {
           return;
         }
 
-        const currentTimestamp = Date.now();
+        const currentTimestamp = moment();
         const expirationDuration = options.expiresIn as number;
-        const expiredAt = moment(currentTimestamp).add(expirationDuration, 'seconds').valueOf();
+        const expiredAt = moment(currentTimestamp).add(expirationDuration, 'second').valueOf();
         resolve({ token, expiredAt });
       });
     });
