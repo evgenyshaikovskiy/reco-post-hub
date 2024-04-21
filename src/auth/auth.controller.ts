@@ -39,8 +39,8 @@ export class AuthController {
     }
   }
 
-  @Get('/logout')
+  @Post('/logout')
   public async logout(@Body() dto: LogoutDto) {
-    return await this.authService.logout(dto.refreshToken);
+    return (await this.authService.logout(dto.refreshToken)).message;
   }
 }

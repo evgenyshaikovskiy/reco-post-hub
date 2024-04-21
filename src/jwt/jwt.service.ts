@@ -1,15 +1,26 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CommonService } from 'src/common/common.service';
 import { IJwt } from 'src/config/interfaces/jwt.interface';
 
 import * as jwt from 'jsonwebtoken';
-import { IAccessPayload, IAccessToken } from './interfaces/access-token.interface';
+import {
+  IAccessPayload,
+  IAccessToken,
+} from './interfaces/access-token.interface';
 import { IEmailPayload, IEmailToken } from './interfaces/email-token.interface';
-import { IRefreshPayload, IRefreshToken } from './interfaces/refresh-token.interface';
+import {
+  IRefreshPayload,
+  IRefreshToken,
+} from './interfaces/refresh-token.interface';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { TokenTypeEnum } from './enums/token-type.enum';
 import { v4 } from 'uuid';
+import moment from 'moment';
 
 @Injectable()
 export class JwtService {
@@ -31,7 +42,7 @@ export class JwtService {
     tokenType: TokenTypeEnum,
     domain?: string | null,
     tokenId?: string,
-  ): Promise<string> {
+  ): Promise<{ token: string; expiredAt: number }> {
     const jwtOptions: jwt.SignOptions = {
       issuer: this.issuer,
       subject: user.email,
@@ -134,7 +145,7 @@ export class JwtService {
     payload: IAccessPayload | IEmailPayload | IRefreshPayload,
     secret: string,
     options: jwt.SignOptions,
-  ): Promise<string> {
+  ): Promise<{ token: string; expiredAt: number }> {
     return new Promise((resolve, rejects) => {
       jwt.sign(payload, secret, options, (error, token) => {
         if (error) {
@@ -142,7 +153,10 @@ export class JwtService {
           return;
         }
 
-        resolve(token);
+        const currentTimestamp = Date.now();
+        const expirationDuration = options.expiresIn as number;
+        const expiredAt = moment(currentTimestamp).add(expirationDuration, 'seconds').valueOf();
+        resolve({ token, expiredAt });
       });
     });
   }

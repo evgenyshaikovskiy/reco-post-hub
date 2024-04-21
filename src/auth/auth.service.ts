@@ -50,7 +50,7 @@ export class AuthService {
       domain,
     );
 
-    this.mailerService.sendConfirmationEmail(user, confirmationToken);
+    this.mailerService.sendConfirmationEmail(user, confirmationToken.token);
     return this.commonService.generateMessage(
       'Registration successful. Check your email for verification.',
     );
@@ -69,7 +69,7 @@ export class AuthService {
         TokenTypeEnum.CONFIRMATION,
         domain,
       );
-      this.mailerService.sendConfirmationEmail(user, confirmationToken);
+      this.mailerService.sendConfirmationEmail(user, confirmationToken.token);
       throw new UnauthorizedException(
         'Please confirm your email, a new email has been sent',
       );
@@ -107,7 +107,9 @@ export class AuthService {
       TokenTypeEnum.REFRESH,
     );
     await this._blacklistToken(id, tokenId);
-    return this.commonService.generateMessage('Logout successful');
+    return this.commonService.generateMessage(
+      'You were logged out successfully',
+    );
   }
 
   public async resetPasswordEmail(
@@ -122,7 +124,7 @@ export class AuthService {
         TokenTypeEnum.RESET_PASSWORD,
         domain,
       );
-      this.mailerService.sendResetPasswordEmail(user, resetToken);
+      this.mailerService.sendResetPasswordEmail(user, resetToken.token);
     }
 
     return this.commonService.generateMessage('Reset password email sent');
@@ -247,7 +249,9 @@ export class AuthService {
     user: UserEntity,
     domain?: string,
     tokenId?: string,
-  ): Promise<[string, string]> {
+  ): Promise<
+    [{ token: string; expiredAt: number }, { token: string; expiredAt: number }]
+  > {
     return Promise.all([
       this.jwtService.generateToken(
         user,
