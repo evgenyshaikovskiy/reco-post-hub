@@ -1,29 +1,33 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaperEntity } from './paper.entity';
+import { TopicEntity } from './topic.entity';
 import { Repository } from 'typeorm';
-import { CreatePaperDto } from './dtos';
+import { CreateTopicDto } from './dtos';
 import { CommonService } from 'src/common/common.service';
 import { UserEntity } from 'src/users/entities/user.entity';
 
 @Injectable()
-export class PaperService {
+export class TopicService {
   constructor(
-    @InjectRepository(PaperEntity)
-    private readonly papersRepository: Repository<PaperEntity>,
+    @InjectRepository(TopicEntity)
+    private readonly topicsRepository: Repository<TopicEntity>,
     private readonly commonService: CommonService,
   ) {}
 
   public async create(
-    dto: CreatePaperDto,
+    dto: CreateTopicDto,
     user: UserEntity,
-  ): Promise<PaperEntity> {
+  ): Promise<TopicEntity> {
     const { title, contentHtml, contentText, summarization, hashtags } = dto;
     const url = this.convertTitleToUrl(title);
 
     await this._checkUrlUniqueness(url);
 
-    const paper = this.papersRepository.create({
+    const topic = this.topicsRepository.create({
       authorId: user.id,
       hashtags: hashtags,
       htmlContent: contentHtml,
@@ -33,17 +37,23 @@ export class PaperService {
       url,
     });
 
-    await this.commonService.saveEntity(this.papersRepository, paper, true);
-    return paper;
+    await this.commonService.saveEntity(this.topicsRepository, topic, true);
+    return topic;
   }
 
-  public async getPaperByUrl(url: string): Promise<PaperEntity> {
-    const paper = await this.papersRepository.findOne({ where: { url } });
-    if (!paper) {
-      throw new NotFoundException('Paper was not found!');
+  public async getTopicByUrl(url: string): Promise<TopicEntity> {
+    const topic = await this.topicsRepository.findOne({ where: { url } });
+    if (!topic) {
+      throw new NotFoundException('Topic was not found!');
     }
 
-    return paper;
+    return topic;
+  }
+
+  public async getNumberOfTopics(count: number): Promise<TopicEntity[]> {
+    const topics = await this.topicsRepository.find({});
+    const sortedTopics = topics.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return sortedTopics.length <= count ? sortedTopics : sortedTopics.slice(0, count);
   }
 
   private convertTitleToUrl(title: string) {
@@ -60,7 +70,7 @@ export class PaperService {
   }
 
   private async _checkUrlUniqueness(url: string): Promise<void> {
-    const count = await this.papersRepository.count({ where: { url } });
+    const count = await this.topicsRepository.count({ where: { url } });
     if (count > 0) {
       throw new ConflictException('Invalid title, try another');
     }

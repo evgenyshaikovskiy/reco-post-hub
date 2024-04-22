@@ -1,5 +1,5 @@
-export interface IPaper {
-  paperId: string;
+export interface ITopic {
+  topicId: string;
   authorId: number;
   url: string;
   title: string;

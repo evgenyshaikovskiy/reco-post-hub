@@ -6,14 +6,14 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { IPaper } from './interfaces/paper.interface';
+import { ITopic } from './interfaces/topic.interface';
 import { IsString, MinLength } from 'class-validator';
 
 @Entity()
-@Unique(['paperId', 'url'])
-export class PaperEntity implements IPaper {
+@Unique(['topicId', 'url'])
+export class TopicEntity implements ITopic {
   @PrimaryGeneratedColumn('uuid')
-  paperId: string;
+  topicId: string;
 
   @Column('numeric')
   authorId: number;

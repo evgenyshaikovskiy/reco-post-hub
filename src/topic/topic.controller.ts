@@ -1,6 +1,6 @@
 import { Body, Controller, Post, UseGuards, UseInterceptors } from '@nestjs/common';
-import { PaperService } from './paper.service';
-import { CreatePaperDto } from './dtos';
+import { TopicService } from './topic.service';
+import { CreateTopicDto } from './dtos';
 // import { AuthGuard } from '@nestjs/passport';
 // import { GetUser } from 'src/auth/user.decorator';
 import { UserEntity } from 'src/users/entities/user.entity';
@@ -10,15 +10,15 @@ import { GetUser } from 'src/user.decorator';
 
 // @UseGuards(AuthGuard('jwt'))
 @UseInterceptors(AuthInterceptor)
-@Controller('paper')
-export class PaperController {
-  constructor(private readonly paperService: PaperService) {}
+@Controller('topic')
+export class TopicController {
+  constructor(private readonly topicService: TopicService) {}
 
   @Post()
-  public async createPaper(
-    @Body() dto: CreatePaperDto,
+  public async createTopic(
+    @Body() dto: CreateTopicDto,
     @GetUser() user: UserEntity,
   ) {
-    return await this.paperService.create(dto, user);
+    return await this.topicService.create(dto, user);
   }
 }

@@ -1,6 +1,6 @@
 import { IsArray, IsString } from "class-validator";
 
-export abstract class CreatePaperDto {
+export abstract class CreateTopicDto {
   @IsString()
   title: string;
 

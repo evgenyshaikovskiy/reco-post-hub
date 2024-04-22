@@ -11,7 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfig } from './config/typeorm.factory';
 import { ExternalModule } from './external/external.module';
-import { PaperModule } from './paper/paper.module';
+import { TopicModule } from './topic/topic.module';
 import { APP_GUARD } from '@nestjs/core';
 
 @Module({
@@ -31,7 +31,7 @@ import { APP_GUARD } from '@nestjs/core';
     MailerModule,
     AuthModule,
     ExternalModule,
-    PaperModule,
+    TopicModule,
   ],
   providers: [AppService],
 })
