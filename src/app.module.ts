@@ -10,6 +10,9 @@ import { MailerModule } from './mailer/mailer.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfig } from './config/typeorm.factory';
+import { ExternalModule } from './external/external.module';
+import { PaperModule } from './paper/paper.module';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -27,6 +30,8 @@ import { TypeOrmConfig } from './config/typeorm.factory';
     JwtModule,
     MailerModule,
     AuthModule,
+    ExternalModule,
+    PaperModule,
   ],
   providers: [AppService],
 })
