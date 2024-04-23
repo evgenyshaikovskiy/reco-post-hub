@@ -9,6 +9,8 @@ import { Repository } from 'typeorm';
 import { CreateTopicDto } from './dtos';
 import { CommonService } from 'src/common/common.service';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
+import { IPublicTopic } from './topic.interface';
 
 @Injectable()
 export class TopicService {
@@ -16,6 +18,7 @@ export class TopicService {
     @InjectRepository(TopicEntity)
     private readonly topicsRepository: Repository<TopicEntity>,
     private readonly commonService: CommonService,
+    private readonly usersService: UsersService,
   ) {}
 
   public async create(
@@ -41,19 +44,39 @@ export class TopicService {
     return topic;
   }
 
-  public async getTopicByUrl(url: string): Promise<TopicEntity> {
+  public async getTopicByUrl(url: string): Promise<IPublicTopic> {
     const topic = await this.topicsRepository.findOne({ where: { url } });
+    const author = await this.usersService.findOneById(topic.authorId);
     if (!topic) {
       throw new NotFoundException('Topic was not found!');
     }
 
-    return topic;
+    return { ...topic, user: author };
   }
 
-  public async getNumberOfTopics(count: number): Promise<TopicEntity[]> {
+  public async getNumberOfTopics(count: number): Promise<IPublicTopic[]> {
     const topics = await this.topicsRepository.find({});
-    const sortedTopics = topics.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    return sortedTopics.length <= count ? sortedTopics : sortedTopics.slice(0, count);
+    const distinctTopicsAuthorsIds = [
+      ...new Set(topics.map((topic) => topic.authorId)),
+    ];
+    const topicsAuthorsPromises = distinctTopicsAuthorsIds.map((distinctId) =>
+      this.usersService.findOneById(distinctId),
+    );
+    const topicsAuthor = await Promise.all(topicsAuthorsPromises);
+    const sortedTopics = topics.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    );
+
+    return (sortedTopics.length <= count ? sortedTopics : sortedTopics)
+      .slice(0, count)
+      .map((topic) => {
+        return {
+          ...topic,
+          user: topicsAuthor.find(
+            (author) => String(topic.authorId) === String(author.id),
+          ),
+        };
+      });
   }
 
   private convertTitleToUrl(title: string) {
