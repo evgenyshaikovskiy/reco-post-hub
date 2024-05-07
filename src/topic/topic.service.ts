@@ -54,6 +54,24 @@ export class TopicService {
     return { ...topic, user: author };
   }
 
+  public async getTopicById(topicId: string): Promise<IPublicTopic> {
+    const topic = await this.topicsRepository.findOne({ where: { topicId } });
+    if (!topic) {
+      throw new NotFoundException('Topic was not found');
+    }
+
+    const topicAuthor = await this.usersService.findOneById(topic.authorId);
+
+    if (!topicAuthor) {
+      throw new NotFoundException('Invalid topic author');
+    }
+    
+    return {
+      ...topic,
+      user: topicAuthor,
+    };
+  }
+
   public async getNumberOfTopics(count: number): Promise<IPublicTopic[]> {
     const topics = await this.topicsRepository.find({});
     const distinctTopicsAuthorsIds = [

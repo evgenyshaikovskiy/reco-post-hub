@@ -54,6 +54,9 @@ export class UserEntity implements IUser {
   @Column(() => CredentialsEmbeddable)
   public credentials: CredentialsEmbeddable = new CredentialsEmbeddable();
 
+  @Column({ type: 'varchar' })
+  public userPictureId: string;
+
   @CreateDateColumn()
   public createdAt: Date;
 

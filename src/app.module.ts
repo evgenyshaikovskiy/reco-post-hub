@@ -13,6 +13,9 @@ import { TypeOrmConfig } from './config/typeorm.factory';
 import { ExternalModule } from './external/external.module';
 import { TopicModule } from './topic/topic.module';
 import { APP_GUARD } from '@nestjs/core';
+import { NotificationModule } from './notification/notification.module';
+import { CommentModule } from './comment/comment.module';
+import { ResourceModule } from './resources/resource.module';
 
 @Module({
   imports: [
@@ -32,6 +35,9 @@ import { APP_GUARD } from '@nestjs/core';
     AuthModule,
     ExternalModule,
     TopicModule,
+    NotificationModule,
+    CommentModule,
+    ResourceModule,
   ],
   providers: [AppService],
 })

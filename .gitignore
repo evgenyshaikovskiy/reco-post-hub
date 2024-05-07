@@ -3,6 +3,7 @@
 /node_modules
 /keys
 /cert
+/uploads
 
 # Logs
 logs

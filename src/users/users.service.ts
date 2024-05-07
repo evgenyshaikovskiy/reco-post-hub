@@ -37,6 +37,7 @@ export class UsersService {
       name: formattedName,
       username: formattedUsername,
       password: await hash(password, 10),
+      userPictureId: 'default',
     });
 
     await this.commonService.saveEntity(this.usersRepository, user, true);
@@ -94,7 +95,7 @@ export class UsersService {
 
   public async update(userId: number, dto: UpdateUserDto): Promise<UserEntity> {
     const user = await this.findOneById(userId);
-    const { name, username, confirmed } = dto;
+    const { name, username, confirmed, userPictureId } = dto;
 
     if (!isUndefined(name) && !isNull(name)) {
       if (name === user.name) {
@@ -117,6 +118,10 @@ export class UsersService {
 
     if (!isUndefined(confirmed) && !isNull(confirmed)) {
       user.confirmed = confirmed;
+    }
+
+    if (!isUndefined(userPictureId)) {
+      user.userPictureId = userPictureId;
     }
 
     await this.commonService.saveEntity(this.usersRepository, user);
