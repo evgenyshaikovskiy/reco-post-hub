@@ -10,6 +10,8 @@ import { CreateTopicDto } from './dtos';
 import { CommonService } from 'src/common/common.service';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { HashtagService } from 'src/hashtag/hashtag.service';
+import { ITopic } from './interfaces/topic.interface';
 import { IPublicTopic } from './topic.interface';
 
 @Injectable()
@@ -19,6 +21,7 @@ export class TopicService {
     private readonly topicsRepository: Repository<TopicEntity>,
     private readonly commonService: CommonService,
     private readonly usersService: UsersService,
+    private readonly hashtagsService: HashtagService,
   ) {}
 
   public async create(
@@ -30,9 +33,11 @@ export class TopicService {
 
     await this._checkUrlUniqueness(url);
 
+    const hashtagEntities =
+      await this.hashtagsService.addOrFindHashtagsOnTopicCreation(hashtags);
     const topic = this.topicsRepository.create({
       authorId: user.id,
-      hashtags: hashtags,
+      hashtags: hashtagEntities,
       htmlContent: contentHtml,
       title: title,
       textContent: contentText,
@@ -45,8 +50,12 @@ export class TopicService {
   }
 
   public async getTopicByUrl(url: string): Promise<IPublicTopic> {
-    const topic = await this.topicsRepository.findOne({ where: { url } });
+    const topic = await this.topicsRepository.findOne({
+      where: { url },
+      relations: ['hashtags'],
+    });
     const author = await this.usersService.findOneById(topic.authorId);
+
     if (!topic) {
       throw new NotFoundException('Topic was not found!');
     }
@@ -55,7 +64,10 @@ export class TopicService {
   }
 
   public async getTopicById(topicId: string): Promise<IPublicTopic> {
-    const topic = await this.topicsRepository.findOne({ where: { topicId } });
+    const topic = await this.topicsRepository.findOne({
+      where: { topicId },
+      relations: ['hashtags'],
+    });
     if (!topic) {
       throw new NotFoundException('Topic was not found');
     }
@@ -65,7 +77,7 @@ export class TopicService {
     if (!topicAuthor) {
       throw new NotFoundException('Invalid topic author');
     }
-    
+
     return {
       ...topic,
       user: topicAuthor,
@@ -73,7 +85,9 @@ export class TopicService {
   }
 
   public async getNumberOfTopics(count: number): Promise<IPublicTopic[]> {
-    const topics = await this.topicsRepository.find({});
+    const topics = await this.topicsRepository.find({
+      relations: ['hashtags'],
+    });
     const distinctTopicsAuthorsIds = [
       ...new Set(topics.map((topic) => topic.authorId)),
     ];

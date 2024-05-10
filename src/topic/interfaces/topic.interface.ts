@@ -1,3 +1,6 @@
+import { IHashtag } from "src/hashtag/interfaces";
+import { IUser } from "src/users/interfaces/user.interface";
+
 export interface ITopic {
   topicId: string;
   authorId: number;
@@ -5,6 +8,6 @@ export interface ITopic {
   title: string;
   textContent: string;
   htmlContent: string;
-  hashtags: string[];
+  hashtags: IHashtag[];
   summarization: string;
 }

@@ -1,7 +1,8 @@
-import { UserEntity } from "src/users/entities/user.entity";
-import { IPublicUser } from "src/users/user.interface";
+import { HashtagEntity } from 'src/hashtag/hashtag.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
+import { IPublicUser } from 'src/users/user.interface';
 
-export class IPublicTopic {
+export interface IPublicTopic {
   topicId: string;
 
   authorId: number;
@@ -14,13 +15,13 @@ export class IPublicTopic {
 
   htmlContent: string;
 
-  hashtags: string[] = [];
+  hashtags: HashtagEntity[];
 
   summarization: string;
 
   createdAt: Date;
 
-  updatedAt: Date = new Date();
+  updatedAt: Date;
 
   user: IPublicUser;
 }

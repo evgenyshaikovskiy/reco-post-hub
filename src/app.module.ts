@@ -16,6 +16,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { NotificationModule } from './notification/notification.module';
 import { CommentModule } from './comment/comment.module';
 import { ResourceModule } from './resources/resource.module';
+import { HashtagModule } from './hashtag/hashtag.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ResourceModule } from './resources/resource.module';
     TopicModule,
     NotificationModule,
     CommentModule,
+    HashtagModule,
     ResourceModule,
   ],
   providers: [AppService],
