@@ -12,13 +12,14 @@ import { UserEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { HashtagService } from 'src/hashtag/hashtag.service';
 import { ITopic } from './interfaces/topic.interface';
-import { IPublicTopic } from './topic.interface';
 import {
   IPagination,
   PaginatedResource,
 } from 'src/common/utils/pagination.util';
 import { IFiltering } from 'src/common/utils/filter.util';
 import { ISorting } from 'src/common/utils/sorting.util';
+import { HashtagEntity } from 'src/hashtag/hashtag.entity';
+import { getOrder, getWhere } from 'src/common/utils/other.utils';
 
 @Injectable()
 export class TopicService {
@@ -39,11 +40,9 @@ export class TopicService {
 
     await this._checkUrlUniqueness(url);
 
-    const hashtagEntities =
-      await this.hashtagsService.addOrFindHashtagsOnTopicCreation(hashtags);
     const topic = this.topicsRepository.create({
-      authorId: user.id,
-      hashtags: hashtagEntities,
+      author: user,
+      hashtags: [],
       htmlContent: contentHtml,
       title: title,
       textContent: contentText,
@@ -51,52 +50,65 @@ export class TopicService {
       url,
     });
 
+    const hashtagEntities =
+      await this.hashtagsService.updateHashtagsOnTopicCreation(hashtags, topic);
+
+    topic.hashtags = [...hashtagEntities];
+
     await this.commonService.saveEntity(this.topicsRepository, topic, true);
     return topic;
   }
 
-  public async getTopicByUrl(url: string): Promise<IPublicTopic> {
+  public async getTopicByUrl(url: string): Promise<ITopic> {
     const topic = await this.topicsRepository.findOne({
       where: { url },
-      relations: ['hashtags'],
+      relations: ['author', 'hashtags'],
     });
-    const author = await this.usersService.findOneById(topic.authorId);
 
     if (!topic) {
       throw new NotFoundException('Topic was not found!');
     }
 
-    return { ...topic, user: author };
+    return { ...topic };
   }
 
-  public async getTopicById(topicId: string): Promise<IPublicTopic> {
+  public async getTopicById(topicId: string): Promise<ITopic> {
     const topic = await this.topicsRepository.findOne({
       where: { topicId },
-      relations: ['hashtags'],
+      relations: ['author', 'hashtags'],
     });
     if (!topic) {
       throw new NotFoundException('Topic was not found');
     }
 
-    const topicAuthor = await this.usersService.findOneById(topic.authorId);
-
-    if (!topicAuthor) {
-      throw new NotFoundException('Invalid topic author');
-    }
-
     return {
       ...topic,
-      user: topicAuthor,
     };
   }
 
-  // public async getTopics(
-  //   { page, limit, size, offset }: IPagination,
-  //   sort?: ISorting,
-  //   filter?: IFiltering,
-  // ): Promise<PaginatedResource<ITopic> {
+  public async getTopics(
+    { page, limit, size, offset }: IPagination,
+    sort?: ISorting,
+    filter?: IFiltering,
+  ): Promise<PaginatedResource<ITopic>> {
+    const where = getWhere(filter);
+    const order = getOrder(sort);
 
-  // }
+    const [result, total] = await this.topicsRepository.findAndCount({
+      where,
+      order,
+      take: limit,
+      skip: offset,
+      relations: ['author', 'hashtags'],
+    });
+
+    return {
+      totalItems: total,
+      items: result,
+      page,
+      size,
+    };
+  }
 
   // public async getNumberOfTopics(count: number): Promise<IPublicTopic[]> {
   //   const topics = await this.topicsRepository.find({

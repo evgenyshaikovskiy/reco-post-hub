@@ -8,6 +8,7 @@ import { HashtagEntity } from './hashtag.entity';
 import { Repository } from 'typeorm';
 import { CommonService } from 'src/common/common.service';
 import { CreateHashtagDto } from './dtos';
+import { TopicEntity } from 'src/topic/topic.entity';
 
 @Injectable()
 export class HashtagService {
@@ -17,22 +18,26 @@ export class HashtagService {
     private readonly commonService: CommonService,
   ) {}
 
-  public async create(dto: CreateHashtagDto): Promise<HashtagEntity> {
+  public async create(
+    dto: CreateHashtagDto,
+    topic: TopicEntity,
+  ): Promise<HashtagEntity> {
     const { name } = dto;
 
     await this._checkHashtagNameUniqueness(name);
 
     const hashtag = this.repository.create({
       name,
-      topics: [],
+      topics: [{ ...topic }],
     });
 
     await this.commonService.saveEntity(this.repository, hashtag, true);
     return hashtag;
   }
 
-  public async addOrFindHashtagsOnTopicCreation(
+  public async updateHashtagsOnTopicCreation(
     names: string[],
+    topicCreated: TopicEntity,
   ): Promise<HashtagEntity[]> {
     const distinctNames = [
       ...new Set(names.map((name) => name.toLocaleLowerCase())),
@@ -45,23 +50,29 @@ export class HashtagService {
     const existHashtagMapping = await Promise.all(existHashtagMappingPending);
     const hashtagsPending = existHashtagMapping.map((mappingObject) =>
       mappingObject.exists
-        ? this.findHashtagByName(mappingObject.name)
-        : this.create({ name: mappingObject.name }),
+        ? this.updateHashtag(mappingObject.name, topicCreated)
+        : this.create({ name: mappingObject.name }, topicCreated),
     );
 
     const hashtags = await Promise.all(hashtagsPending);
     return hashtags;
   }
 
-  public async findHashtagByName(name: string): Promise<HashtagEntity> {
+  public async updateHashtag(
+    name: string,
+    topic: TopicEntity,
+  ): Promise<HashtagEntity> {
     const hashtag = await this.repository.findOne({
       where: { name: name.toLocaleLowerCase() },
+      relations: ['topics'],
     });
 
     if (!hashtag) {
       throw new NotFoundException('Hashtag not found.');
     }
 
+    hashtag.topics.push({ ...topic });
+    await this.commonService.saveEntity(this.repository, hashtag, false);
     return hashtag;
   }
 

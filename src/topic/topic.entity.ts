@@ -13,6 +13,8 @@ import { ITopic } from './interfaces/topic.interface';
 import { IsString, MinLength } from 'class-validator';
 import { HashtagEntity } from 'src/hashtag/hashtag.entity';
 import { IHashtag } from 'src/hashtag/interfaces';
+import { IUser } from 'src/users/interfaces/user.interface';
+import { UserEntity } from 'src/users/entities/user.entity';
 
 @Entity()
 @Unique(['topicId', 'url'])
@@ -20,8 +22,11 @@ export class TopicEntity implements ITopic {
   @PrimaryGeneratedColumn('uuid')
   topicId: string;
 
-  @Column({ type: 'varchar' })
-  authorId: string;
+  // add eager
+  @ManyToOne(() => UserEntity, (user) => user.topics, {
+    createForeignKeyConstraints: false,
+  })
+  author: UserEntity;
 
   @Column({ type: 'varchar' })
   @IsString()
@@ -36,9 +41,9 @@ export class TopicEntity implements ITopic {
   @MinLength(100)
   textContent: string;
 
-  @ManyToMany(() => HashtagEntity, (hashtag) => hashtag.topics)
+  @ManyToMany(() => HashtagEntity, (hashtag) => hashtag.topics, { eager: true })
   @JoinTable()
-  hashtags: IHashtag[];
+  hashtags: HashtagEntity[];
 
   @Column({ type: 'varchar' })
   @IsString()

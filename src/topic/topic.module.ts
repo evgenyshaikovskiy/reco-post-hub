@@ -7,10 +7,11 @@ import { JwtModule } from 'src/jwt/jwt.module';
 import { UsersModule } from 'src/users/users.module';
 import { TopicPublicController } from './public-topic.controller';
 import { HashtagModule } from 'src/hashtag/hashtag.module';
+import { UserEntity } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TopicEntity]),
+    TypeOrmModule.forFeature([TopicEntity, UserEntity]),
     JwtModule,
     UsersModule,
     HashtagModule,

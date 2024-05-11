@@ -16,6 +16,8 @@ import {
 } from 'typeorm';
 import { SubscriptionEntity } from 'src/subscription/subscription.entity';
 import { ISubscription } from 'src/subscription/interfaces';
+import { TopicEntity } from 'src/topic/topic.entity';
+import { ITopic } from 'src/topic/interfaces/topic.interface';
 
 @Entity()
 export class UserEntity implements IUser {
@@ -61,9 +63,14 @@ export class UserEntity implements IUser {
   public userPictureId: string;
 
   @OneToMany(() => SubscriptionEntity, (subscription) => subscription.actor, {
-    eager: true,
+    // eager: true,
   })
   public subscriptions: ISubscription[];
+
+  @OneToMany(() => TopicEntity, (topic) => topic.author, {
+    // eager: true,
+  })
+  public topics: ITopic[];
 
   @CreateDateColumn()
   public createdAt: Date;

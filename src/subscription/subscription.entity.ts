@@ -16,7 +16,7 @@ export class SubscriptionEntity implements ISubscription {
   id: string;
 
   @ManyToOne(() => UserEntity, (user) => user.subscriptions)
-  actor: IUser;
+  actor: UserEntity;
 
   @Column({ type: 'enum', enum: SubscriptionType })
   type: SubscriptionType;

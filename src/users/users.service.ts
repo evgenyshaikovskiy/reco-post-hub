@@ -39,6 +39,7 @@ export class UsersService {
       password: await hash(password, 10),
       userPictureId: 'default',
       subscriptions: [],
+      topics: [],
     });
 
     await this.commonService.saveEntity(this.usersRepository, user, true);

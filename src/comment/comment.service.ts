@@ -47,7 +47,7 @@ export class CommentService {
     const notifications = [
       // create notification for topic author
       this.notificationService.create({
-        targetId: publicTopic.authorId,
+        targetId: publicTopic.author.id,
         text: `There is new comment under your topic from ${user.username}`,
         url: publicTopic.url,
         viewed: false,

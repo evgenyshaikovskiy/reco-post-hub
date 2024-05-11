@@ -20,5 +20,6 @@ export class HashtagEntity implements IHashtag {
   name: string;
 
   @ManyToMany(() => TopicEntity, (topic) => topic.hashtags)
-  topics: ITopic[];
+  @JoinTable()
+  topics: TopicEntity[];
 }

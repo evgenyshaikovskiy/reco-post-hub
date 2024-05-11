@@ -36,5 +36,8 @@ export class TopicPublicController {
     sortingParams?: ISorting,
     @FilteringParams(['createdAt', 'title', 'summarization'])
     filteringParams?: IFiltering,
-  ) {}
+  ) {
+    console.log(paginationParams, sortingParams, filteringParams);
+    return await this.topicService.getTopics(paginationParams, sortingParams, filteringParams);
+  }
 }

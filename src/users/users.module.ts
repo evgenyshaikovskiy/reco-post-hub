@@ -7,6 +7,7 @@ import { PublicUserController } from './users-public.controller';
 import { UserController } from './user.controller';
 import { JwtModule } from 'src/jwt/jwt.module';
 import { SubscriptionEntity } from 'src/subscription/subscription.entity';
+import { TopicEntity } from 'src/topic/topic.entity';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SubscriptionEntity } from 'src/subscription/subscription.entity';
       UserEntity,
       CredentialsEmbeddable,
       SubscriptionEntity,
+      TopicEntity,
     ]),
     JwtModule,
   ],

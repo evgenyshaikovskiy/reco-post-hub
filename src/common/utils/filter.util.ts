@@ -33,6 +33,8 @@ export const FilteringParams = createParamDecorator(
     const filter = req.query.filter as string;
     if (!filter) return null;
 
+    // convert to multiple filters at once
+
     if (typeof data != 'object')
       throw new BadRequestException('Invalid filter parameter');
 
