@@ -5,7 +5,7 @@ import { IPublicUser } from 'src/users/user.interface';
 export interface IPublicTopic {
   topicId: string;
 
-  authorId: number;
+  authorId: string;
 
   url: string;
 

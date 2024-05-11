@@ -13,8 +13,8 @@ export class BlacklistedTokenEntity implements IBlacklistedToken {
   @PrimaryGeneratedColumn('uuid')
   tokenId: string;
 
-  @Column('numeric')
-  userId: number;
+  @Column({ type: 'varchar' })
+  userId: string;
 
   @CreateDateColumn()
   createdAt: Date;

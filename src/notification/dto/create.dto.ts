@@ -8,8 +8,8 @@ export abstract class CreateNotificationDto {
   @IsString()
   text: string;
 
-  @IsNumber()
-  targetId: number;
+  @IsString()
+  targetId: string;
 
   url?: string;
 

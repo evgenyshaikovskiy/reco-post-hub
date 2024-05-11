@@ -38,13 +38,14 @@ export class UsersService {
       username: formattedUsername,
       password: await hash(password, 10),
       userPictureId: 'default',
+      subscriptions: [],
     });
 
     await this.commonService.saveEntity(this.usersRepository, user, true);
     return user;
   }
 
-  public async findOneById(id: number): Promise<UserEntity> {
+  public async findOneById(id: string): Promise<UserEntity> {
     const user = await this.usersRepository.findOne({ where: { id } });
     this.commonService.checkEntityExistence(user, 'User');
     return user;
@@ -61,7 +62,7 @@ export class UsersService {
   }
 
   public async findOneByCredentials(
-    id: number,
+    id: string,
     version: number,
   ): Promise<UserEntity> {
     const user = await this.usersRepository.findOne({ where: { id } });
@@ -93,7 +94,7 @@ export class UsersService {
     return user;
   }
 
-  public async update(userId: number, dto: UpdateUserDto): Promise<UserEntity> {
+  public async update(userId: string, dto: UpdateUserDto): Promise<UserEntity> {
     const user = await this.findOneById(userId);
     const { name, username, confirmed, userPictureId } = dto;
 
@@ -129,7 +130,7 @@ export class UsersService {
   }
 
   public async updateEmail(
-    userId: number,
+    userId: string,
     dto: ChangeEmailDto,
   ): Promise<UserEntity> {
     const user = await this.findOneById(userId);
@@ -148,7 +149,7 @@ export class UsersService {
   }
 
   public async updatePassword(
-    userId: number,
+    userId: string,
     password: string,
     newPassword: string,
   ): Promise<UserEntity> {
@@ -169,7 +170,7 @@ export class UsersService {
   }
 
   public async resetPassword(
-    userId: number,
+    userId: string,
     version: number,
     password: string,
   ): Promise<UserEntity> {
@@ -180,7 +181,7 @@ export class UsersService {
     return user;
   }
 
-  public async remove(userId: number): Promise<UserEntity> {
+  public async remove(userId: string): Promise<UserEntity> {
     const user = await this.findOneById(userId);
     await this.commonService.removeEntity(this.usersRepository, user);
     return user;

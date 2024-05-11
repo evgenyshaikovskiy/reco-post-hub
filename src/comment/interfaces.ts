@@ -1,8 +1,8 @@
 export interface IComment {
   id: string;
-  authorId: number;
+  authorId: string;
   topicId: string;
   textContent: string;
   htmlContent: string;
-  mentionedProfileIds: number[];
+  mentionedProfileIds: string[];
 }

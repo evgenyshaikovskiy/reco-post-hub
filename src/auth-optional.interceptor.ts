@@ -11,7 +11,7 @@ import { UsersService } from './users/users.service';
 import { TokenTypeEnum } from './jwt/enums/token-type.enum';
 
 @Injectable()
-export class AuthInterceptor implements NestInterceptor {
+export class AuthOptionalInterceptor implements NestInterceptor {
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
@@ -23,13 +23,14 @@ export class AuthInterceptor implements NestInterceptor {
   ): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
     if (!(request.headers['authorization'] as string)?.substring(7)) {
-      throw new UnauthorizedException();
+      request.body['user_interceptor'] = null;
     }
 
     const token = (request.headers['authorization'] as string)?.substring(7);
     // const authToken
     if (!token) {
-      throw new UnauthorizedException();
+      request.body['user_interceptor'] = null;
+      return next.handle();
     }
 
     const verified = await this.jwtService.verifyToken(
@@ -44,6 +45,8 @@ export class AuthInterceptor implements NestInterceptor {
 
     if (user) {
       request.body['user_interceptor'] = user;
+    } else {
+      throw new UnauthorizedException();
     }
     return next.handle();
   }

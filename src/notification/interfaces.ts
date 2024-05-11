@@ -4,7 +4,7 @@ export class INotification {
   id: string;
   type: NotificationType;
   text: string;
-  targetId: number;
+  targetId: string;
   url?: string;
   viewed: boolean;
 }

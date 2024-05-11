@@ -17,8 +17,8 @@ export class CommentEntity implements IComment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('numeric')
-  authorId: number;
+  @Column({ type: 'varchar' })
+  authorId: string;
 
   @Column({ type: 'varchar' })
   @IsString()
@@ -34,12 +34,12 @@ export class CommentEntity implements IComment {
   htmlContent: string;
 
   @Column('text', { array: true })
-  mentionedProfileIds: number[] = [];
+  mentionedProfileIds: string[] = [];
 
-  @ManyToOne(() => CommentEntity, comment => comment.childComments)
+  @ManyToOne(() => CommentEntity, (comment) => comment.childComments)
   parentComment: CommentEntity;
 
-  @OneToMany(() => CommentEntity, comment => comment.parentComment)
+  @OneToMany(() => CommentEntity, (comment) => comment.parentComment)
   childComments: CommentEntity[];
 
   @CreateDateColumn()

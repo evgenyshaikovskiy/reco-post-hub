@@ -13,6 +13,12 @@ import { UsersService } from 'src/users/users.service';
 import { HashtagService } from 'src/hashtag/hashtag.service';
 import { ITopic } from './interfaces/topic.interface';
 import { IPublicTopic } from './topic.interface';
+import {
+  IPagination,
+  PaginatedResource,
+} from 'src/common/utils/pagination.util';
+import { IFiltering } from 'src/common/utils/filter.util';
+import { ISorting } from 'src/common/utils/sorting.util';
 
 @Injectable()
 export class TopicService {
@@ -84,32 +90,40 @@ export class TopicService {
     };
   }
 
-  public async getNumberOfTopics(count: number): Promise<IPublicTopic[]> {
-    const topics = await this.topicsRepository.find({
-      relations: ['hashtags'],
-    });
-    const distinctTopicsAuthorsIds = [
-      ...new Set(topics.map((topic) => topic.authorId)),
-    ];
-    const topicsAuthorsPromises = distinctTopicsAuthorsIds.map((distinctId) =>
-      this.usersService.findOneById(distinctId),
-    );
-    const topicsAuthor = await Promise.all(topicsAuthorsPromises);
-    const sortedTopics = topics.sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-    );
+  // public async getTopics(
+  //   { page, limit, size, offset }: IPagination,
+  //   sort?: ISorting,
+  //   filter?: IFiltering,
+  // ): Promise<PaginatedResource<ITopic> {
 
-    return (sortedTopics.length <= count ? sortedTopics : sortedTopics)
-      .slice(0, count)
-      .map((topic) => {
-        return {
-          ...topic,
-          user: topicsAuthor.find(
-            (author) => String(topic.authorId) === String(author.id),
-          ),
-        };
-      });
-  }
+  // }
+
+  // public async getNumberOfTopics(count: number): Promise<IPublicTopic[]> {
+  //   const topics = await this.topicsRepository.find({
+  //     relations: ['hashtags'],
+  //   });
+  //   const distinctTopicsAuthorsIds = [
+  //     ...new Set(topics.map((topic) => topic.authorId)),
+  //   ];
+  //   const topicsAuthorsPromises = distinctTopicsAuthorsIds.map((distinctId) =>
+  //     this.usersService.findOneById(distinctId),
+  //   );
+  //   const topicsAuthor = await Promise.all(topicsAuthorsPromises);
+  //   const sortedTopics = topics.sort(
+  //     (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+  //   );
+
+  //   return (sortedTopics.length <= count ? sortedTopics : sortedTopics)
+  //     .slice(0, count)
+  //     .map((topic) => {
+  //       return {
+  //         ...topic,
+  //         user: topicsAuthor.find(
+  //           (author) => String(topic.authorId) === String(author.id),
+  //         ),
+  //       };
+  //     });
+  // }
 
   private convertTitleToUrl(title: string) {
     // Replace any characters that are not letters or spaces with empty strings

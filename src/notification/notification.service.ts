@@ -53,7 +53,7 @@ export class NotificationService {
   }
 
   public async getAllNotificationsForUser(
-    targetId: number,
+    targetId: string,
   ): Promise<NotificationEntity[]> {
     const notifications = await this.notificationRepository.find({
       where: { targetId },

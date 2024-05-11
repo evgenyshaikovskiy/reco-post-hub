@@ -3,7 +3,7 @@ import { IUser } from "src/users/interfaces/user.interface";
 
 export interface ITopic {
   topicId: string;
-  authorId: number;
+  authorId: string;
   url: string;
   title: string;
   textContent: string;

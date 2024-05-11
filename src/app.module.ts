@@ -17,6 +17,7 @@ import { NotificationModule } from './notification/notification.module';
 import { CommentModule } from './comment/comment.module';
 import { ResourceModule } from './resources/resource.module';
 import { HashtagModule } from './hashtag/hashtag.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { HashtagModule } from './hashtag/hashtag.module';
     CommentModule,
     HashtagModule,
     ResourceModule,
+    SubscriptionModule,
   ],
   providers: [AppService],
 })

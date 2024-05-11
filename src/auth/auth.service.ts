@@ -143,7 +143,7 @@ export class AuthService {
   // }
 
   public async changePassword(
-    userId: number,
+    userId: string,
     dto: ChangePasswordDto,
   ): Promise<IAuthResult> {
     const { password, passwordConfirmation, passwordMain } = dto;
@@ -169,7 +169,7 @@ export class AuthService {
   }
 
   private async _blacklistToken(
-    userId: number,
+    userId: string,
     tokenId: string,
   ): Promise<void> {
     const blacklistedToken = this.blacklistedTokensRepository.create({
@@ -184,7 +184,7 @@ export class AuthService {
   }
 
   private async _checkIfTokenIsBlacklisted(
-    userId: number,
+    userId: string,
     tokenId: string,
   ): Promise<void> {
     const count = await this.blacklistedTokensRepository.count({

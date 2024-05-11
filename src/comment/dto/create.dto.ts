@@ -1,8 +1,8 @@
 import { IsArray, IsNumber, IsString } from 'class-validator';
 
 export abstract class CreateCommentDto {
-  @IsNumber()
-  authorId: number;
+  @IsString()
+  authorId: string;
   @IsString()
   topicId: string;
   @IsString()
@@ -10,12 +10,12 @@ export abstract class CreateCommentDto {
   @IsString()
   htmlContent: string;
   @IsArray()
-  mentionedProfileIds: number[];
+  mentionedProfileIds: string[];
 }
 
 export abstract class CreateAnswerDto {
   @IsNumber()
-  authorId: number;
+  authorId: string;
   @IsString()
   topicId: string;
   @IsString()
@@ -23,7 +23,7 @@ export abstract class CreateAnswerDto {
   @IsString()
   htmlContent: string;
   @IsArray()
-  mentionedProfileIds: number[];
+  mentionedProfileIds: string[];
   @IsString()
   parentCommentId: string;
 }

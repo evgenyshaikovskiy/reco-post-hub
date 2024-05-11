@@ -14,11 +14,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { SubscriptionEntity } from 'src/subscription/subscription.entity';
+import { ISubscription } from 'src/subscription/interfaces';
 
 @Entity()
 export class UserEntity implements IUser {
-  @PrimaryGeneratedColumn('increment')
-  public id: number;
+  @PrimaryGeneratedColumn('uuid')
+  public id: string;
 
   @Column({ type: 'varchar', length: 100 })
   @IsString()
@@ -57,6 +59,11 @@ export class UserEntity implements IUser {
 
   @Column({ type: 'varchar' })
   public userPictureId: string;
+
+  @OneToMany(() => SubscriptionEntity, (subscription) => subscription.actor, {
+    eager: true,
+  })
+  public subscriptions: ISubscription[];
 
   @CreateDateColumn()
   public createdAt: Date;

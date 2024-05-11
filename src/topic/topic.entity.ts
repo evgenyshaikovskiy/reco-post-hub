@@ -20,8 +20,8 @@ export class TopicEntity implements ITopic {
   @PrimaryGeneratedColumn('uuid')
   topicId: string;
 
-  @Column({ type: 'numeric' })
-  authorId: number;
+  @Column({ type: 'varchar' })
+  authorId: string;
 
   @Column({ type: 'varchar' })
   @IsString()

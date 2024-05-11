@@ -1,5 +1,5 @@
 export interface IBlacklistedToken {
   tokenId: string;
-  userId: number;
+  userId: string;
   createdAt: Date;
 }

@@ -11,5 +11,5 @@ export abstract class EditCommentDto {
   htmlContent: string;
 
   @IsArray()
-  mentionedProfileIds: number[];
+  mentionedProfileIds: string[];
 }
