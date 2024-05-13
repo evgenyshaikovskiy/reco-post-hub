@@ -1,4 +1,4 @@
-import { IUser } from '../interfaces/user.interface';
+import { IUser, UserRole } from '../interfaces/user.interface';
 import { IsBoolean, IsEmail, IsString, Length, Matches } from 'class-validator';
 import {
   BCRYPT_HASH,
@@ -71,6 +71,9 @@ export class UserEntity implements IUser {
     // eager: true,
   })
   public topics: ITopic[];
+
+  @Column({ type: 'enum', enum: UserRole })
+  public role: UserRole;
 
   @CreateDateColumn()
   public createdAt: Date;

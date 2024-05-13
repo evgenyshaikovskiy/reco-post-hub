@@ -10,10 +10,21 @@ export interface IUser {
   password: string;
   confirmed: boolean;
   credentials: ICredentials;
+  role: UserRole;
   createdAt: Date;
   updatedAt: Date;
+  userPictureId: string;
 
   // relationships
   subscriptions: ISubscription[];
   topics: ITopic[];
 }
+
+export enum UserRole {
+  ADMIN = 'admin',
+  MOD = 'mod',
+  USER = 'user',
+}
+
+export interface IUserProfile
+  extends Omit<IUser, 'password' | 'confirmed' | 'credentials'> {}

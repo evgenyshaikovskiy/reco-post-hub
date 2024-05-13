@@ -37,7 +37,7 @@ export class SubscriptionController {
     return await this.service.getHashtagsSubscriptions(user);
   }
 
-  @Get('subscriptions')
+  @Get('users')
   public async getUserSubscriptions(@GetUser() user: UserEntity) {
     return await this.service.getUsersSubscriptions(user);
   }

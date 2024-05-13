@@ -26,7 +26,7 @@ export class ProfilePictureController {
   public async uploadProfilePicture(
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addFileTypeValidator({ fileType: 'image/*' })
+        .addFileTypeValidator({ fileType: 'image/png' })
         .build(),
     )
     file: Express.Multer.File,

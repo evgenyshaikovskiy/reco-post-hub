@@ -14,8 +14,8 @@ export class ResourceService {
     }
   }
 
-  public async getFile(fileName: string) {
-    const filePath = path.join(this.fileServiceDir, fileName);
-    return await fs.promises.readFile(filePath);
+  public getFile(fileName: string) {
+    const filePath = path.join(this.fileServiceDir, fileName + '.png');
+    return fs.createReadStream(filePath);
   }
 }

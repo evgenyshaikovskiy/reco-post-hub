@@ -12,6 +12,7 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { ChangeEmailDto } from './dtos/change-email.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { IUserProfile, UserRole } from './interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
@@ -37,6 +38,7 @@ export class UsersService {
       name: formattedName,
       username: formattedUsername,
       password: await hash(password, 10),
+      role: UserRole.USER,
       userPictureId: 'default',
       subscriptions: [],
       topics: [],
@@ -44,6 +46,14 @@ export class UsersService {
 
     await this.commonService.saveEntity(this.usersRepository, user, true);
     return user;
+  }
+
+  public async findProfileByUsername(username: string): Promise<IUserProfile> {
+    const user = await this.usersRepository.findOne({
+      where: { username },
+    });
+    this.commonService.checkEntityExistence(user, 'User');
+    return user as IUserProfile;
   }
 
   public async findOneById(id: string): Promise<UserEntity> {
@@ -57,6 +67,7 @@ export class UsersService {
       where: {
         email: email.toLowerCase(),
       },
+      relations: ['topics', 'subscriptions'],
     });
     this._throwUnauthorizedException(user);
     return user;

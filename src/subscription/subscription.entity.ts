@@ -15,7 +15,9 @@ export class SubscriptionEntity implements ISubscription {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.subscriptions)
+  @ManyToOne(() => UserEntity, (user) => user.subscriptions, {
+    createForeignKeyConstraints: false,
+  })
   actor: UserEntity;
 
   @Column({ type: 'enum', enum: SubscriptionType })

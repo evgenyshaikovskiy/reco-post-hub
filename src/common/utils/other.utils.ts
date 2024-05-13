@@ -41,3 +41,16 @@ export const getWhere = (filter: IFiltering) => {
   if (filter.rule == FilterRule.NOT_IN)
     return { [filter.property]: Not(In(filter.value.split(','))) };
 };
+
+// const targetKeys = Object.keys(targetInterface) as (keyof U)[];
+// const initialKeys = Object.keys(instance) as (keyof T)[];
+
+// const mappedInstance = targetKeys.reduce((acc, key) => {
+//   if (initialKeys.includes(key)) {
+//     acc[key] = instance[key];
+//   }
+//   return acc;
+// }, {} as U);
+
+// return mappedInstance;
+// }
