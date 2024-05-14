@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UseInterceptors } from '@nestjs/common';
 import { AuthInterceptor } from 'src/auth.interceptor';
 import { UsersService } from './users.service';
 import { UserEntity } from './entities/user.entity';
@@ -15,7 +15,11 @@ export class UserController {
     @Body() dto: UpdateUserDto,
     @GetUser() user: UserEntity,
   ) {
-
     return this.userService.update(user.id, dto);
+  }
+
+  @Get()
+  public async currentUser(@GetUser() user: UserEntity) {
+    return user;
   }
 }

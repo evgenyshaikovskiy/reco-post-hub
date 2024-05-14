@@ -83,11 +83,16 @@ export class SubscriptionService {
     user: UserEntity,
   ): Promise<void> {
     const subs = await this.repository.find({
-      where: [{ actor: user, targetId: targetId }],
+      where: {
+        targetId,
+        actor: {
+          id: user.id,
+        },
+      },
     });
 
     if (subs.length > 0) {
-      throw new ConflictException('Subscription already exist');
+      throw new ConflictException('Subscription already exist.');
     }
   }
 }
