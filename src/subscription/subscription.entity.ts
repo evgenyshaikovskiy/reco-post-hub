@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -25,4 +26,7 @@ export class SubscriptionEntity implements ISubscription {
 
   @Column({ type: 'varchar' })
   targetId: string;
+
+  @CreateDateColumn()
+  emittedAt: Date;
 }

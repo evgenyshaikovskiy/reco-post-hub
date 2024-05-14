@@ -12,7 +12,7 @@ import { EventType, IEvent } from './interfaces';
 @Unique(['id'])
 export class EventEntity implements IEvent {
   @PrimaryGeneratedColumn()
-  eventId: string;
+  id: string;
 
   @Column({
     type: 'enum',

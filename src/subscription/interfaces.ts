@@ -6,6 +6,7 @@ export interface ISubscription {
   type: SubscriptionType;
   // either user id or hashtag id
   targetId: string;
+  emittedAt: Date;
 }
 
 export enum SubscriptionType {

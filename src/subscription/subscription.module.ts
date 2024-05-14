@@ -8,6 +8,7 @@ import { SubscriptionService } from './subscription.service';
 import { SubscriptionController } from './subscription.controller';
 import { EventService } from 'src/event/event.service';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { EventModule } from 'src/event/event.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserEntity } from 'src/users/entities/user.entity';
     HashtagModule,
     UsersModule,
     JwtModule,
+    EventModule,
   ],
   providers: [SubscriptionService],
   exports: [SubscriptionService],

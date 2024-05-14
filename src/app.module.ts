@@ -18,6 +18,7 @@ import { CommentModule } from './comment/comment.module';
 import { ResourceModule } from './resources/resource.module';
 import { HashtagModule } from './hashtag/hashtag.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { EventModule } from './event/event.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
     HashtagModule,
     ResourceModule,
     SubscriptionModule,
+    EventModule,
   ],
   providers: [AppService],
 })

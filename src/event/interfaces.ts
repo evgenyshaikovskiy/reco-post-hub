@@ -11,7 +11,7 @@ export enum EventType {
 }
 
 export interface IEvent {
-  eventId: string;
+  id: string;
   emitterId: string;
   receiverId: string;
   type: EventType;

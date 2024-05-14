@@ -59,7 +59,7 @@ export class TopicService {
     return topic;
   }
 
-  public async getTopicByUrl(url: string): Promise<ITopic> {
+  public async getTopicByUrl(url: string): Promise<TopicEntity> {
     const topic = await this.topicsRepository.findOne({
       where: { url },
       relations: ['author', 'hashtags'],

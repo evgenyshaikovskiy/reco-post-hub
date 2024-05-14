@@ -7,6 +7,8 @@ import { UsersService } from 'src/users/users.service';
 import { HashtagService } from 'src/hashtag/hashtag.service';
 import { CreateSubscriptionDto, SubscriptionType } from './interfaces';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { EventService } from 'src/event/event.service';
+import { EventType } from 'src/event/interfaces';
 
 @Injectable()
 export class SubscriptionService {
@@ -14,8 +16,7 @@ export class SubscriptionService {
     @InjectRepository(SubscriptionEntity)
     private readonly repository: Repository<SubscriptionEntity>,
     private readonly commonService: CommonService,
-    private readonly userService: UsersService,
-    private readonly hashtagService: HashtagService,
+    private readonly eventService: EventService,
   ) {}
 
   public async create(
@@ -32,6 +33,14 @@ export class SubscriptionService {
     });
 
     await this.commonService.saveEntity(this.repository, subscription, true);
+    await this.eventService.create({
+      emitterId: user.id,
+      type:
+        type === SubscriptionType.TO_USER
+          ? EventType.SUBSCRIBE_TO_USER
+          : EventType.SUBSCRIBE_TO_HASHTAG,
+      receiverId: targetId,
+    });
 
     return subscription;
   }
@@ -84,9 +93,20 @@ export class SubscriptionService {
     return subscriptions;
   }
 
-  public async deleteSubscriptionById(id: string): Promise<SubscriptionEntity> {
+  public async deleteSubscriptionById(
+    id: string,
+    user: UserEntity,
+  ): Promise<SubscriptionEntity> {
     const subscription = await this.findOneById(id);
     await this.commonService.removeEntity(this.repository, subscription);
+    await this.eventService.create({
+      emitterId: user.id,
+      type:
+        subscription.type === SubscriptionType.TO_USER
+          ? EventType.UNSUBSCRIBE_FROM_USER
+          : EventType.UNSUBSCRIBE_FROM_HASHTAG,
+      receiverId: subscription.targetId,
+    });
     return subscription;
   }
 

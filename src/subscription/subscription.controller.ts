@@ -29,7 +29,7 @@ export class SubscriptionController {
 
   @Delete(':id')
   public async unsubscribe(@Param() params, @GetUser() user: UserEntity) {
-    return await this.service.deleteSubscriptionById(params.id);
+    return await this.service.deleteSubscriptionById(params.id, user);
   }
 
   @Get('hashtags')

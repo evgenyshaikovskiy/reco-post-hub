@@ -8,6 +8,7 @@ import { UsersModule } from 'src/users/users.module';
 import { TopicPublicController } from './public-topic.controller';
 import { HashtagModule } from 'src/hashtag/hashtag.module';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { EventModule } from 'src/event/event.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserEntity } from 'src/users/entities/user.entity';
     JwtModule,
     UsersModule,
     HashtagModule,
+    EventModule,
   ],
   providers: [TopicService],
   exports: [TopicService],
