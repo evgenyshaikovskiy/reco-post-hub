@@ -40,7 +40,11 @@ export class SubscriptionService {
     user: UserEntity,
   ): Promise<SubscriptionEntity[]> {
     const subscriptions = await this.repository.find({
-      where: { actor: user },
+      where: {
+        actor: {
+          id: user.id,
+        },
+      },
     });
 
     return subscriptions;
@@ -50,7 +54,14 @@ export class SubscriptionService {
     user: UserEntity,
   ): Promise<SubscriptionEntity[]> {
     const subscriptions = await this.repository.find({
-      where: [{ actor: user, type: SubscriptionType.TO_HASHTAG }],
+      where: [
+        {
+          actor: {
+            id: user.id,
+          },
+          type: SubscriptionType.TO_HASHTAG,
+        },
+      ],
     });
 
     return subscriptions;
@@ -60,7 +71,14 @@ export class SubscriptionService {
     user: UserEntity,
   ): Promise<SubscriptionEntity[]> {
     const subscriptions = await this.repository.find({
-      where: [{ actor: user, type: SubscriptionType.TO_USER }],
+      where: [
+        {
+          actor: {
+            id: user.id,
+          },
+          type: SubscriptionType.TO_USER,
+        },
+      ],
     });
 
     return subscriptions;
