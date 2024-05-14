@@ -43,6 +43,7 @@ export class TopicService {
     const topic = this.topicsRepository.create({
       author: user,
       hashtags: [],
+      scores: [],
       htmlContent: contentHtml,
       title: title,
       textContent: contentText,
@@ -62,7 +63,13 @@ export class TopicService {
   public async getTopicByUrl(url: string): Promise<TopicEntity> {
     const topic = await this.topicsRepository.findOne({
       where: { url },
-      relations: ['author', 'hashtags'],
+      relations: [
+        'author',
+        'hashtags',
+        'scores',
+        'scores.actor',
+        'scores.topic',
+      ],
     });
 
     if (!topic) {
@@ -75,7 +82,7 @@ export class TopicService {
   public async getTopicById(topicId: string): Promise<ITopic> {
     const topic = await this.topicsRepository.findOne({
       where: { topicId },
-      relations: ['author', 'hashtags'],
+      relations: ['author', 'hashtags', 'scores'],
     });
     if (!topic) {
       throw new NotFoundException('Topic was not found');
@@ -99,7 +106,7 @@ export class TopicService {
       order,
       take: limit,
       skip: offset,
-      relations: ['author', 'hashtags'],
+      relations: ['author', 'hashtags', 'scores'],
     });
 
     return {

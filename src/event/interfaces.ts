@@ -8,6 +8,10 @@ export enum EventType {
   // between user and hashtag
   SUBSCRIBE_TO_HASHTAG = 'subscribe-to-hashtag',
   UNSUBSCRIBE_FROM_HASHTAG = 'unsubscribe-from-hashtag',
+
+  ADD_SCORE = 'score-added',
+  REMOVE_SCORE = 'score-removed',
+  UPDATE_SCORE = 'update-score',
 }
 
 export interface IEvent {

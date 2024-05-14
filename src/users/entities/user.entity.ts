@@ -18,6 +18,7 @@ import { SubscriptionEntity } from 'src/subscription/subscription.entity';
 import { ISubscription } from 'src/subscription/interfaces';
 import { TopicEntity } from 'src/topic/topic.entity';
 import { ITopic } from 'src/topic/interfaces/topic.interface';
+import { ScoreEntity } from 'src/score/score.entity';
 
 @Entity()
 export class UserEntity implements IUser {
@@ -74,6 +75,9 @@ export class UserEntity implements IUser {
 
   @Column({ type: 'enum', enum: UserRole })
   public role: UserRole;
+
+  @OneToMany(() => ScoreEntity, (score) => score.actor)
+  public scores: ScoreEntity[];
 
   @CreateDateColumn()
   public createdAt: Date;

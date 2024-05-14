@@ -42,6 +42,7 @@ export class UsersService {
       userPictureId: 'default',
       subscriptions: [],
       topics: [],
+      scores: [],
     });
 
     await this.commonService.saveEntity(this.usersRepository, user, true);
@@ -67,7 +68,12 @@ export class UsersService {
       where: {
         email: email.toLowerCase(),
       },
-      relations: ['topics', 'subscriptions'],
+      relations: [
+        'topics',
+        'subscriptions',
+        'scores',
+        'scores.topic',
+      ],
     });
     this._throwUnauthorizedException(user);
     return user;

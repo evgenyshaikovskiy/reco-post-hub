@@ -19,6 +19,7 @@ import { ResourceModule } from './resources/resource.module';
 import { HashtagModule } from './hashtag/hashtag.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { EventModule } from './event/event.module';
+import { ScoreModule } from './score/score.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { EventModule } from './event/event.module';
     HashtagModule,
     ResourceModule,
     SubscriptionModule,
+    ScoreModule,
     EventModule,
   ],
   providers: [AppService],

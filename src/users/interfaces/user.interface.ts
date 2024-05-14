@@ -1,6 +1,7 @@
 import { ISubscription } from 'src/subscription/interfaces';
 import { ICredentials } from './credentials.interface';
 import { ITopic } from 'src/topic/interfaces/topic.interface';
+import { IScore } from 'src/score/score.interface';
 
 export interface IUser {
   id: string;
@@ -18,6 +19,7 @@ export interface IUser {
   // relationships
   subscriptions: ISubscription[];
   topics: ITopic[];
+  scores: IScore[];
 }
 
 export enum UserRole {

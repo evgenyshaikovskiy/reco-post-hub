@@ -1,4 +1,5 @@
 import { IHashtag } from 'src/hashtag/interfaces';
+import { IScore } from 'src/score/score.interface';
 import { IUser } from 'src/users/interfaces/user.interface';
 
 export interface ITopic {
@@ -9,5 +10,6 @@ export interface ITopic {
   textContent: string;
   htmlContent: string;
   hashtags: IHashtag[];
+  scores: IScore[];
   summarization: string;
 }

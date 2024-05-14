@@ -5,6 +5,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
@@ -15,6 +16,7 @@ import { HashtagEntity } from 'src/hashtag/hashtag.entity';
 import { IHashtag } from 'src/hashtag/interfaces';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { ScoreEntity } from 'src/score/score.entity';
 
 @Entity()
 @Unique(['topicId', 'url'])
@@ -44,6 +46,9 @@ export class TopicEntity implements ITopic {
   @ManyToMany(() => HashtagEntity, (hashtag) => hashtag.topics, { eager: true })
   @JoinTable()
   hashtags: HashtagEntity[];
+
+  @OneToMany(() => ScoreEntity, (score) => score.topic)
+  scores: ScoreEntity[];
 
   @Column({ type: 'varchar' })
   @IsString()
