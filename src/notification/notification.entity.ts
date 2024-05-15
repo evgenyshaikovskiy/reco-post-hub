@@ -1,7 +1,17 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 import { INotification } from './interfaces';
 import { NotificationType } from './notification.enum';
 import { IsString } from 'class-validator';
+import { IUser } from 'src/users/interfaces/user.interface';
+import { UserEntity } from 'src/users/entities/user.entity';
 
 @Entity()
 @Unique(['id'])
@@ -19,8 +29,10 @@ export class NotificationEntity implements INotification {
   @IsString()
   text: string;
 
-  @Column({ type: 'varchar' })
-  targetId: string;
+  @ManyToOne(() => UserEntity, (user) => user.notifications, {
+    createForeignKeyConstraints: false,
+  })
+  receiver: IUser;
 
   @Column({ type: 'varchar' })
   url?: string;

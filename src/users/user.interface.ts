@@ -5,4 +5,7 @@ export interface IPublicUser {
   email: string;
   createdAt: Date;
   updatedAt: Date;
+  bio: string;
+  karma: number;
+  rating: number;
 }

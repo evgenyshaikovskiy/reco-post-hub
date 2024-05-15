@@ -4,6 +4,7 @@ import { NotificationEntity } from './notification.entity';
 import { Repository } from 'typeorm';
 import { CreateNotificationDto } from './dto/create.dto';
 import { CommonService } from 'src/common/common.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class NotificationService {
@@ -11,13 +12,20 @@ export class NotificationService {
     @InjectRepository(NotificationEntity)
     private readonly notificationRepository: Repository<NotificationEntity>,
     private readonly commonService: CommonService,
+    private readonly userService: UsersService,
   ) {}
 
   public async create(dto: CreateNotificationDto): Promise<NotificationEntity> {
     const { type, text, targetId, url, viewed } = dto;
 
+    const user = await this.userService.findOneById(targetId);
+
+    if (!user) {
+      throw new BadRequestException('User is not found.');
+    }
+
     const notificationEntity = this.notificationRepository.create({
-      targetId: targetId,
+      receiver: user,
       text: text,
       type: type,
       url: url ?? '',
@@ -56,7 +64,7 @@ export class NotificationService {
     targetId: string,
   ): Promise<NotificationEntity[]> {
     const notifications = await this.notificationRepository.find({
-      where: { targetId },
+      where: { receiver: { id: targetId } },
     });
 
     return notifications;

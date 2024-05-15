@@ -19,6 +19,10 @@ import { ISubscription } from 'src/subscription/interfaces';
 import { TopicEntity } from 'src/topic/topic.entity';
 import { ITopic } from 'src/topic/interfaces/topic.interface';
 import { ScoreEntity } from 'src/score/score.entity';
+import { ISettings } from '../interfaces/settings.interface';
+import { SettingsEmbeddable } from '../embeddables/settings.embeddable';
+import { NotificationEntity } from 'src/notification/notification.entity';
+import { INotification } from 'src/notification/interfaces';
 
 @Entity()
 export class UserEntity implements IUser {
@@ -59,6 +63,21 @@ export class UserEntity implements IUser {
 
   @Column(() => CredentialsEmbeddable)
   public credentials: CredentialsEmbeddable = new CredentialsEmbeddable();
+
+  @Column({ type: 'varchar' })
+  public bio: string;
+
+  @Column({ type: 'numeric' })
+  public karma: number;
+
+  @Column({ type: 'numeric' })
+  public rating: number;
+
+  @Column(() => SettingsEmbeddable)
+  public settings: SettingsEmbeddable = new SettingsEmbeddable();
+
+  @OneToMany(() => NotificationEntity, (notification) => notification.receiver)
+  public notifications: INotification[];
 
   @Column({ type: 'varchar' })
   public userPictureId: string;

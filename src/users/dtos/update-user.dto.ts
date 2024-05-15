@@ -36,4 +36,34 @@ export abstract class UpdateUserDto {
   @ValidateIf((o: UpdateUserDto) => !isUndefined(o.userPictureId))
   @IsString()
   public userPictureId?: string;
+
+  @ValidateIf((o: UpdateUserDto) => !isUndefined(o.bio))
+  @IsString()
+  public bio?: string;
+}
+
+export abstract class UpdateUserPrivacySettingsDto {
+  @IsBoolean()
+  showBio: boolean;
+
+  @IsBoolean()
+  showEmail: boolean;
+
+  @IsBoolean()
+  showUserSubscriptions: boolean;
+
+  @IsBoolean()
+  showHashtagSubscriptions: boolean;
+
+  @IsBoolean()
+  showComments: boolean;
+
+  @IsBoolean()
+  showKarma: boolean;
+
+  @IsBoolean()
+  showRating: boolean;
+
+  @IsBoolean()
+  showScores: boolean;
 }

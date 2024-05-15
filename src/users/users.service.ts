@@ -13,6 +13,7 @@ import { ChangeEmailDto } from './dtos/change-email.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IUserProfile, UserRole } from './interfaces/user.interface';
+import { ISettings } from './interfaces/settings.interface';
 
 @Injectable()
 export class UsersService {
@@ -40,6 +41,10 @@ export class UsersService {
       password: await hash(password, 10),
       role: UserRole.USER,
       userPictureId: 'default',
+      bio: '',
+      rating: 0,
+      karma: 0,
+      notifications: [],
       subscriptions: [],
       topics: [],
       scores: [],
@@ -73,6 +78,7 @@ export class UsersService {
         'subscriptions',
         'scores',
         'scores.topic',
+        'notifications',
       ],
     });
     this._throwUnauthorizedException(user);
@@ -112,9 +118,24 @@ export class UsersService {
     return user;
   }
 
+  public async updateUserSettings(
+    userId: string,
+    settings: ISettings,
+  ): Promise<UserEntity> {
+    const user = await this.findOneById(userId);
+    if (!user && !settings) {
+      throw new BadRequestException('Wrong credentials!');
+    }
+
+    user.settings = { ...user.settings, ...settings };
+
+    await this.commonService.saveEntity(this.usersRepository, user);
+    return user;
+  }
+
   public async update(userId: string, dto: UpdateUserDto): Promise<UserEntity> {
     const user = await this.findOneById(userId);
-    const { name, username, confirmed, userPictureId } = dto;
+    const { name, username, confirmed, userPictureId, bio } = dto;
 
     if (!isUndefined(name) && !isNull(name)) {
       if (name === user.name) {
@@ -141,6 +162,10 @@ export class UsersService {
 
     if (!isUndefined(userPictureId)) {
       user.userPictureId = userPictureId;
+    }
+
+    if (!isUndefined(bio)) {
+      user.bio = bio;
     }
 
     await this.commonService.saveEntity(this.usersRepository, user);
