@@ -7,6 +7,8 @@ export interface IScore {
   actor: IUser;
   score: number;
   topic: ITopic;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export abstract class CreateScoreDto {

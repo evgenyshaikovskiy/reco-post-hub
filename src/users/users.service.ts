@@ -48,6 +48,7 @@ export class UsersService {
       subscriptions: [],
       topics: [],
       scores: [],
+      bookmarks: [],
     });
 
     await this.commonService.saveEntity(this.usersRepository, user, true);
@@ -79,6 +80,8 @@ export class UsersService {
         'scores',
         'scores.topic',
         'notifications',
+        'bookmarks',
+        'bookmarks.topic'
       ],
     });
     this._throwUnauthorizedException(user);

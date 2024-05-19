@@ -9,10 +9,11 @@ import { TopicPublicController } from './public-topic.controller';
 import { HashtagModule } from 'src/hashtag/hashtag.module';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { EventModule } from 'src/event/event.module';
+import { BookmarkEntity } from 'src/bookmark/bookmark.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TopicEntity, UserEntity]),
+    TypeOrmModule.forFeature([TopicEntity, UserEntity, BookmarkEntity]),
     JwtModule,
     UsersModule,
     HashtagModule,

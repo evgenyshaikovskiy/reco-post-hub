@@ -11,6 +11,7 @@ import { TopicEntity } from 'src/topic/topic.entity';
 import { SettingsEmbeddable } from './embeddables/settings.embeddable';
 import { NotificationEntity } from 'src/notification/notification.entity';
 import { ScoreEntity } from 'src/score/score.entity';
+import { BookmarkEntity } from 'src/bookmark/bookmark.entity';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ScoreEntity } from 'src/score/score.entity';
       SubscriptionEntity,
       TopicEntity,
       NotificationEntity,
+      BookmarkEntity,
     ]),
     JwtModule,
   ],

@@ -44,12 +44,18 @@ export class TopicPublicController {
   @Get('')
   public async getTopics(
     @PaginationParams() paginationParams: IPagination,
-    @SortingParams(['createdAt', 'title', 'summarization'])
+    @SortingParams(['createdAt', 'title', 'totalScore'])
     sortingParams?: ISorting,
-    @FilteringParams(['createdAt', 'title', 'summarization'])
+    @FilteringParams([
+      'createdAt',
+      'title',
+      'summarization',
+      'textContent',
+      'published',
+      'totalScore',
+    ])
     filteringParams?: IFiltering,
   ) {
-    console.log(paginationParams, sortingParams, filteringParams);
     return await this.topicService.getTopics(
       paginationParams,
       sortingParams,

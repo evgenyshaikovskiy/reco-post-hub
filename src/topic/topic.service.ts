@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TopicEntity } from './topic.entity';
@@ -18,8 +19,8 @@ import {
 } from 'src/common/utils/pagination.util';
 import { IFiltering } from 'src/common/utils/filter.util';
 import { ISorting } from 'src/common/utils/sorting.util';
-import { HashtagEntity } from 'src/hashtag/hashtag.entity';
 import { getOrder, getWhere } from 'src/common/utils/other.utils';
+import { UserRole } from 'src/users/interfaces/user.interface';
 
 @Injectable()
 export class TopicService {
@@ -48,6 +49,8 @@ export class TopicService {
       title: title,
       textContent: contentText,
       summarization,
+      published: false,
+      totalScore: 0,
       url,
     });
 
@@ -116,6 +119,38 @@ export class TopicService {
       size,
     };
   }
+
+  public async getTopicsForReview({
+    page,
+    limit,
+    size,
+    offset,
+  }: IPagination, adminUser: UserEntity): Promise<PaginatedResource<ITopic>> {
+    const order = getOrder({ direction: 'desc', property: 'createdAt' });
+
+    if (adminUser.role === UserRole.ADMIN || adminUser.role === UserRole.MOD) {
+      throw new UnauthorizedException('You don`t have rights to review this article.');
+    }
+
+    const [result, total] = await this.topicsRepository.findAndCount({
+      where: {
+        published: false,
+      },
+      order,
+      take: limit,
+      skip: offset,
+      relations: ['author', 'hashtags', 'scores']
+    });
+
+
+    return {
+      totalItems: total,
+      items: result,
+      page,
+      size
+    }
+  }
+  
 
   // public async getNumberOfTopics(count: number): Promise<IPublicTopic[]> {
   //   const topics = await this.topicsRepository.find({

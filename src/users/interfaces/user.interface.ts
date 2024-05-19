@@ -4,6 +4,7 @@ import { ITopic } from 'src/topic/interfaces/topic.interface';
 import { IScore } from 'src/score/score.interface';
 import { ISettings } from './settings.interface';
 import { INotification } from 'src/notification/interfaces';
+import { IBookmark } from 'src/bookmark/bookmark.interface';
 
 export interface IUser {
   id: string;
@@ -22,9 +23,9 @@ export interface IUser {
   updatedAt: Date;
   userPictureId: string;
 
-  // relationships
   notifications: INotification[];
   subscriptions: ISubscription[];
+  bookmarks: IBookmark[];
   topics: ITopic[];
   scores: IScore[];
 }

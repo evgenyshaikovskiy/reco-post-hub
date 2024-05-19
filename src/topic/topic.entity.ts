@@ -11,12 +11,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ITopic } from './interfaces/topic.interface';
-import { IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsNumber, IsString, MinLength } from 'class-validator';
 import { HashtagEntity } from 'src/hashtag/hashtag.entity';
 import { IHashtag } from 'src/hashtag/interfaces';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { ScoreEntity } from 'src/score/score.entity';
+import { BookmarkEntity } from 'src/bookmark/bookmark.entity';
 
 @Entity()
 @Unique(['topicId', 'url'])
@@ -43,12 +44,23 @@ export class TopicEntity implements ITopic {
   @MinLength(100)
   textContent: string;
 
+  @Column({ type: 'boolean'})
+  @IsBoolean()
+  published: boolean;
+
   @ManyToMany(() => HashtagEntity, (hashtag) => hashtag.topics, { eager: true })
   @JoinTable()
   hashtags: HashtagEntity[];
 
+  @OneToMany(() => BookmarkEntity, (bookmark) => bookmark.topic)
+  relatedBookmarks: BookmarkEntity[];
+
   @OneToMany(() => ScoreEntity, (score) => score.topic)
   scores: ScoreEntity[];
+
+  @Column({type: 'numeric'})
+  @IsNumber()
+  totalScore: number;
 
   @Column({ type: 'varchar' })
   @IsString()

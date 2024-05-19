@@ -1,3 +1,4 @@
+import { IBookmark } from 'src/bookmark/bookmark.interface';
 import { IHashtag } from 'src/hashtag/interfaces';
 import { IScore } from 'src/score/score.interface';
 import { IUser } from 'src/users/interfaces/user.interface';
@@ -12,4 +13,7 @@ export interface ITopic {
   hashtags: IHashtag[];
   scores: IScore[];
   summarization: string;
+  published: boolean;
+  relatedBookmarks: IBookmark[];
+  totalScore: number;
 }

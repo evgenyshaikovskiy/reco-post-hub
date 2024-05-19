@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { IScore } from './score.interface';
 import { ITopic } from 'src/topic/interfaces/topic.interface';
 import { IUser } from 'src/users/interfaces/user.interface';
@@ -7,6 +7,7 @@ import { TopicEntity } from 'src/topic/topic.entity';
 
 @Entity()
 export class ScoreEntity implements IScore {
+
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -22,4 +23,10 @@ export class ScoreEntity implements IScore {
     createForeignKeyConstraints: false,
   })
   topic: ITopic;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date = new Date();
 }

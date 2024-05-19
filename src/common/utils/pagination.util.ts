@@ -11,6 +11,10 @@ export interface IPagination {
   offset: number;
 }
 
+const MAX_PAGE_SIZE = 100;
+
+
+
 export const PaginationParams = createParamDecorator(
   (data, ctx: ExecutionContext): IPagination => {
     const req = ctx.switchToHttp().getRequest();
@@ -21,9 +25,9 @@ export const PaginationParams = createParamDecorator(
       throw new BadRequestException('Invalid pagination parameters');
     }
 
-    if (size > 100) {
+    if (size > MAX_PAGE_SIZE) {
       throw new BadRequestException(
-        'Invalid pagination params: max page size is 100',
+        `Invalid pagination params: max page size is ${MAX_PAGE_SIZE}`,
       );
     }
 

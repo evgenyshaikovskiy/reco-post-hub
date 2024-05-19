@@ -23,6 +23,7 @@ import { ISettings } from '../interfaces/settings.interface';
 import { SettingsEmbeddable } from '../embeddables/settings.embeddable';
 import { NotificationEntity } from 'src/notification/notification.entity';
 import { INotification } from 'src/notification/interfaces';
+import { BookmarkEntity } from 'src/bookmark/bookmark.entity';
 
 @Entity()
 export class UserEntity implements IUser {
@@ -97,6 +98,9 @@ export class UserEntity implements IUser {
 
   @OneToMany(() => ScoreEntity, (score) => score.actor)
   public scores: ScoreEntity[];
+
+  @OneToMany(() => BookmarkEntity, (bookmark) => bookmark.user)
+  public bookmarks: BookmarkEntity[];
 
   @CreateDateColumn()
   public createdAt: Date;
