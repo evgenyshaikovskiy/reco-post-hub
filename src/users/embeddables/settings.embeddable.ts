@@ -1,36 +1,41 @@
-import { Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ISettings } from "../interfaces/settings.interface";
-import { IsBoolean } from "class-validator";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { ISettings } from '../interfaces/settings.interface';
+import dayjs from 'dayjs';
 
 @Entity()
 export class SettingsEmbeddable implements ISettings {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @IsBoolean()
+  @Column({ type: 'boolean' })
   showBio: boolean = false;
 
-  @IsBoolean()
+  @Column({ type: 'boolean' })
   showEmail: boolean = false;
 
-  @IsBoolean()
+  @Column({ type: 'boolean' })
   showUserSubscriptions: boolean = false;
 
-  @IsBoolean()
+  @Column({ type: 'boolean' })
   showHashtagSubscriptions: boolean = false;
 
-  @IsBoolean()
+  @Column({ type: 'boolean' })
   showComments: boolean = false;
 
-  @IsBoolean()
+  @Column({ type: 'boolean' })
   showKarma: boolean = false;
 
-  @IsBoolean()
+  @Column({ type: 'boolean' })
   showRating: boolean = false;
 
-  @IsBoolean()
+  @Column({ type: 'boolean' })
   showScores: boolean = false;
 
-  @UpdateDateColumn()
-  public updatedAt: Date;
+  @Column({ default: dayjs().unix() })
+  public updatedAt: number = dayjs().unix();
 }

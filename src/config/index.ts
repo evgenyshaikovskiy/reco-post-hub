@@ -18,6 +18,7 @@ export function config(): IConfig {
     id: process.env.APP_ID,
     port: parseInt(process.env.PORT, parseIntRadix),
     domain: process.env.DOMAIN,
+    huggingFaceToken: process.env.HUGGING_FACE_TOKEN,
     jwt: {
       access: {
         privateKey,

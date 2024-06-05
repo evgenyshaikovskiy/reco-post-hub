@@ -10,14 +10,22 @@ import { HashtagModule } from 'src/hashtag/hashtag.module';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { EventModule } from 'src/event/event.module';
 import { BookmarkEntity } from 'src/bookmark/bookmark.entity';
+import { CommentEntity } from 'src/comment/comment.entity';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TopicEntity, UserEntity, BookmarkEntity]),
+    TypeOrmModule.forFeature([
+      TopicEntity,
+      UserEntity,
+      CommentEntity,
+      BookmarkEntity,
+    ]),
     JwtModule,
     UsersModule,
     HashtagModule,
     EventModule,
+    NotificationModule,
   ],
   providers: [TopicService],
   exports: [TopicService],

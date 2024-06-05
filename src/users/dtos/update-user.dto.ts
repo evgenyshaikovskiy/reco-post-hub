@@ -7,12 +7,10 @@ import {
 } from 'class-validator';
 import { NAME_REGEX, SLUG_REGEX } from 'src/common/consts/regex.const';
 import { isUndefined, isNull } from 'src/common/utils/validation.util';
-
+import { ISettings } from '../interfaces/settings.interface';
 
 export abstract class UpdateUserDto {
-  @ValidateIf(
-    (o: UpdateUserDto) => !isUndefined(o.username),
-  )
+  @ValidateIf((o: UpdateUserDto) => !isUndefined(o.username))
   @IsString()
   @Length(3, 106)
   @Matches(SLUG_REGEX, {
@@ -20,7 +18,6 @@ export abstract class UpdateUserDto {
   })
   public username?: string;
 
-  
   @ValidateIf((o: UpdateUserDto) => !isUndefined(o.name))
   @IsString()
   @Length(3, 100)
@@ -40,30 +37,7 @@ export abstract class UpdateUserDto {
   @ValidateIf((o: UpdateUserDto) => !isUndefined(o.bio))
   @IsString()
   public bio?: string;
-}
 
-export abstract class UpdateUserPrivacySettingsDto {
-  @IsBoolean()
-  showBio: boolean;
-
-  @IsBoolean()
-  showEmail: boolean;
-
-  @IsBoolean()
-  showUserSubscriptions: boolean;
-
-  @IsBoolean()
-  showHashtagSubscriptions: boolean;
-
-  @IsBoolean()
-  showComments: boolean;
-
-  @IsBoolean()
-  showKarma: boolean;
-
-  @IsBoolean()
-  showRating: boolean;
-
-  @IsBoolean()
-  showScores: boolean;
+  @ValidateIf((o: UpdateUserDto) => !isUndefined(o.settings))
+  public settings?: ISettings;
 }

@@ -14,9 +14,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IUserProfile, UserRole } from './interfaces/user.interface';
 import { ISettings } from './interfaces/settings.interface';
+import { SettingsEmbeddable } from './embeddables/settings.embeddable';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
@@ -49,6 +50,7 @@ export class UsersService {
       topics: [],
       scores: [],
       bookmarks: [],
+      settings: new SettingsEmbeddable(),
     });
 
     await this.commonService.saveEntity(this.usersRepository, user, true);
@@ -81,7 +83,7 @@ export class UsersService {
         'scores.topic',
         'notifications',
         'bookmarks',
-        'bookmarks.topic'
+        'bookmarks.topic',
       ],
     });
     this._throwUnauthorizedException(user);
@@ -138,7 +140,7 @@ export class UsersService {
 
   public async update(userId: string, dto: UpdateUserDto): Promise<UserEntity> {
     const user = await this.findOneById(userId);
-    const { name, username, confirmed, userPictureId, bio } = dto;
+    const { name, username, confirmed, userPictureId, bio, settings } = dto;
 
     if (!isUndefined(name) && !isNull(name)) {
       if (name === user.name) {
@@ -169,6 +171,10 @@ export class UsersService {
 
     if (!isUndefined(bio)) {
       user.bio = bio;
+    }
+
+    if (!isUndefined(settings)) {
+      user.settings = { ...user.settings, ...settings };
     }
 
     await this.commonService.saveEntity(this.usersRepository, user);
@@ -235,11 +241,21 @@ export class UsersService {
 
   // password reset
   public async uncheckedUserByEmail(email: string): Promise<UserEntity> {
-    return this.usersRepository.findOne({
+    return await this.usersRepository.findOne({
       where: {
         email: email.toLowerCase(),
       },
     });
+  }
+
+  public async getAllUsers(): Promise<UserEntity[]> {
+    return await this.usersRepository.find({
+      relations: ['scores', 'comments', 'topics', 'topics.scores'],
+    });
+  }
+
+  public async updateUsers(users: UserEntity[]): Promise<UserEntity[]> {
+    return await this.usersRepository.save(users);
   }
 
   private async _checkUsernameUniqueness(username: string): Promise<void> {

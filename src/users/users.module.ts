@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserService } from './users.service';
 import { UserEntity } from './entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CredentialsEmbeddable } from './embeddables/credentials.embeddable';
@@ -12,6 +12,7 @@ import { SettingsEmbeddable } from './embeddables/settings.embeddable';
 import { NotificationEntity } from 'src/notification/notification.entity';
 import { ScoreEntity } from 'src/score/score.entity';
 import { BookmarkEntity } from 'src/bookmark/bookmark.entity';
+import { CommentEntity } from 'src/comment/comment.entity';
 
 @Module({
   imports: [
@@ -21,14 +22,15 @@ import { BookmarkEntity } from 'src/bookmark/bookmark.entity';
       SettingsEmbeddable,
       ScoreEntity,
       SubscriptionEntity,
+      CommentEntity,
       TopicEntity,
       NotificationEntity,
       BookmarkEntity,
     ]),
     JwtModule,
   ],
-  providers: [UsersService],
-  exports: [UsersService],
+  providers: [UserService],
+  exports: [UserService],
   controllers: [PublicUserController, UserController],
 })
 export class UsersModule {}

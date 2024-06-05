@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SubscriptionEntity } from './subscription.entity';
 import { Repository } from 'typeorm';
 import { CommonService } from 'src/common/common.service';
-import { UsersService } from 'src/users/users.service';
+import { UserService } from 'src/users/users.service';
 import { HashtagService } from 'src/hashtag/hashtag.service';
 import { CreateSubscriptionDto, SubscriptionType } from './interfaces';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { EventService } from 'src/event/event.service';
 import { EventType } from 'src/event/interfaces';
+import { NotificationService } from 'src/notification/notification.service';
+import { NotificationType } from 'src/notification/notification.enum';
 
 @Injectable()
 export class SubscriptionService {
@@ -17,6 +19,7 @@ export class SubscriptionService {
     private readonly repository: Repository<SubscriptionEntity>,
     private readonly commonService: CommonService,
     private readonly eventService: EventService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   public async create(
@@ -41,6 +44,16 @@ export class SubscriptionService {
           : EventType.SUBSCRIBE_TO_HASHTAG,
       receiverId: targetId,
     });
+
+    if (type === SubscriptionType.TO_USER) {
+      await this.notificationService.create({
+        targetId: targetId,
+        text: `${user.username} subscribed to you`,
+        url: `profile/${user.username}`,
+        type: NotificationType.SUBSCRIBED,
+        viewed: false,
+      });
+    }
 
     return subscription;
   }

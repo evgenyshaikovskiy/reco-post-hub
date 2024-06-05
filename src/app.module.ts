@@ -20,6 +20,11 @@ import { HashtagModule } from './hashtag/hashtag.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { EventModule } from './event/event.module';
 import { ScoreModule } from './score/score.module';
+import { BookmarkModule } from './bookmark/bookmark.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ScheduleService } from './schedule.service';
+import { RecommendationService } from './recommendation.service';
+import { HashtagSimilarityModule } from './hashtag-similarity/hashtag-similarity.module';
 
 @Module({
   imports: [
@@ -32,6 +37,7 @@ import { ScoreModule } from './score/score.module';
       imports: [ConfigModule],
       useClass: TypeOrmConfig,
     }),
+    ScheduleModule.forRoot(),
     CommonModule,
     UsersModule,
     JwtModule,
@@ -44,9 +50,11 @@ import { ScoreModule } from './score/score.module';
     HashtagModule,
     ResourceModule,
     SubscriptionModule,
+    BookmarkModule,
+    HashtagSimilarityModule,
     ScoreModule,
     EventModule,
   ],
-  providers: [AppService],
+  providers: [AppService, ScheduleService, RecommendationService],
 })
 export class AppModule {}

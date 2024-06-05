@@ -34,6 +34,7 @@ export class CommentController {
     return await this.commentService.update(dto.id, dto, user);
   }
 
+  @Post(':id')
   public async createAnswer(
     @Body() dto: CreateAnswerDto,
     @GetUser() user: UserEntity,

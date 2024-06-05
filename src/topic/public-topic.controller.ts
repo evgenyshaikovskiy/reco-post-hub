@@ -29,8 +29,6 @@ export class TopicPublicController {
   @UseInterceptors(AuthOptionalInterceptor)
   @Get(':url')
   public async getTopic(@Param() params, @GetUser() user: UserEntity) {
-    // if user
-
     const entity = await this.topicService.getTopicByUrl(params.url);
     await this.eventService.create({
       emitterId: user ? user.id : '',
@@ -46,16 +44,8 @@ export class TopicPublicController {
     @PaginationParams() paginationParams: IPagination,
     @SortingParams(['createdAt', 'title', 'totalScore'])
     sortingParams?: ISorting,
-    @FilteringParams([
-      'createdAt',
-      'title',
-      'summarization',
-      'textContent',
-      'published',
-      'totalScore',
-    ])
-    filteringParams?: IFiltering,
-  ) {
+    @FilteringParams([ 'createdAt', 'title', 'summarization', 'textContent', 'published', 'totalScore'])
+    filteringParams?: IFiltering) {
     return await this.topicService.getTopics(
       paginationParams,
       sortingParams,

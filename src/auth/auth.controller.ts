@@ -4,10 +4,15 @@ import { SignInDto } from './dtos/sign-in.dto';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto } from './dtos/refresh-token.dto';
 import { LogoutDto } from './dtos/log-out.dto';
+import { NotificationService } from 'src/notification/notification.service';
+import { NotificationType } from 'src/notification/notification.enum';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   @Post('/sign-up')
   public async signUp(@Body() dto: SignUpDto) {
@@ -30,6 +35,14 @@ export class AuthController {
     try {
       const result = await this.authService.confirmUserEmail(params.token);
 
+      if (result) {
+        await this.notificationService.create({
+          targetId: result.id,
+          text: 'Your account was created',
+          type: NotificationType.CREATED,
+          viewed: false,
+        });
+      }
       // TODO: redirect or render template
       return {
         message: `Email ${result.email} for ${result.name} account was confirmed, you can login successfully on main website page`,

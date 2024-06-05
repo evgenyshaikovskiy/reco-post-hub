@@ -9,6 +9,8 @@ import { SubscriptionController } from './subscription.controller';
 import { EventService } from 'src/event/event.service';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { EventModule } from 'src/event/event.module';
+import { NotificationService } from 'src/notification/notification.service';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { EventModule } from 'src/event/event.module';
     UsersModule,
     JwtModule,
     EventModule,
+    NotificationModule,
   ],
   providers: [SubscriptionService],
   exports: [SubscriptionService],

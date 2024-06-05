@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -7,10 +8,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { TopicEntity } from './topic.entity';
 import { Repository } from 'typeorm';
-import { CreateTopicDto } from './dtos';
+import { CreateTopicDto, EditTopicDto } from './dtos';
 import { CommonService } from 'src/common/common.service';
 import { UserEntity } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { UserService } from 'src/users/users.service';
 import { HashtagService } from 'src/hashtag/hashtag.service';
 import { ITopic } from './interfaces/topic.interface';
 import {
@@ -21,6 +22,9 @@ import { IFiltering } from 'src/common/utils/filter.util';
 import { ISorting } from 'src/common/utils/sorting.util';
 import { getOrder, getWhere } from 'src/common/utils/other.utils';
 import { UserRole } from 'src/users/interfaces/user.interface';
+import { Observable } from 'rxjs';
+import { NotificationService } from 'src/notification/notification.service';
+import { NotificationType } from 'src/notification/notification.enum';
 
 @Injectable()
 export class TopicService {
@@ -28,7 +32,8 @@ export class TopicService {
     @InjectRepository(TopicEntity)
     private readonly topicsRepository: Repository<TopicEntity>,
     private readonly commonService: CommonService,
-    private readonly usersService: UsersService,
+    private readonly usersService: UserService,
+    private readonly notificationService: NotificationService,
     private readonly hashtagsService: HashtagService,
   ) {}
 
@@ -38,13 +43,12 @@ export class TopicService {
   ): Promise<TopicEntity> {
     const { title, contentHtml, contentText, summarization, hashtags } = dto;
     const url = this.convertTitleToUrl(title);
-
     await this._checkUrlUniqueness(url);
-
     const topic = this.topicsRepository.create({
       author: user,
       hashtags: [],
       scores: [],
+      comments: [],
       htmlContent: contentHtml,
       title: title,
       textContent: contentText,
@@ -53,13 +57,64 @@ export class TopicService {
       totalScore: 0,
       url,
     });
-
     const hashtagEntities =
       await this.hashtagsService.updateHashtagsOnTopicCreation(hashtags, topic);
-
     topic.hashtags = [...hashtagEntities];
-
     await this.commonService.saveEntity(this.topicsRepository, topic, true);
+    return topic;
+  }
+
+  public async removeUnpublishedTopic(topicId: string): Promise<TopicEntity> {
+    const topic = await this.topicsRepository.findOne({
+      where: { topicId },
+      relations: ['hashtags', 'hashtags.topics'],
+    });
+
+    if (!topic || topic.published) {
+      throw new BadRequestException('Topic to remove was not found');
+    }
+
+    // unlink hashtags from topic
+    // if hashtag is not linked with any topic it is removed
+    await Promise.all(
+      topic.hashtags.map((hs) =>
+        this.hashtagsService.removeTopicFromHashtagEntity(hs.id, topicId),
+      ),
+    );
+
+    topic.hashtags = [];
+    await this.commonService.saveEntity(this.topicsRepository, topic, false);
+
+    await this.topicsRepository.remove([topic]);
+    return topic;
+  }
+
+  public async updateTopic(
+    topicId: string,
+    dto: EditTopicDto,
+  ): Promise<TopicEntity> {
+    const { published } = dto;
+    const topic = await this.topicsRepository.findOne({
+      where: { topicId },
+      relations: ['author'],
+    });
+    if (!topic || topic.published) {
+      throw new BadRequestException('Topic is not accessible to change');
+    }
+
+    topic.published = published;
+
+    if (published) {
+      await this.notificationService.create({
+        targetId: topic.author.id,
+        text: 'Your topic was published!',
+        type: NotificationType.PUBLISHED,
+        url: `topic/${topic.url}`,
+        viewed: false,
+      });
+    }
+
+    await this.commonService.saveEntity(this.topicsRepository, topic, false);
     return topic;
   }
 
@@ -70,6 +125,9 @@ export class TopicService {
         'author',
         'hashtags',
         'scores',
+        'comments',
+        'comments.author',
+        'comments.childComments',
         'scores.actor',
         'scores.topic',
       ],
@@ -85,7 +143,13 @@ export class TopicService {
   public async getTopicById(topicId: string): Promise<ITopic> {
     const topic = await this.topicsRepository.findOne({
       where: { topicId },
-      relations: ['author', 'hashtags', 'scores'],
+      relations: [
+        'author',
+        'hashtags',
+        'scores',
+        'comments',
+        'comments.author',
+      ],
     });
     if (!topic) {
       throw new NotFoundException('Topic was not found');
@@ -112,24 +176,19 @@ export class TopicService {
       relations: ['author', 'hashtags', 'scores'],
     });
 
-    return {
-      totalItems: total,
-      items: result,
-      page,
-      size,
-    };
+    return { totalItems: total, items: result, page, size };
   }
 
-  public async getTopicsForReview({
-    page,
-    limit,
-    size,
-    offset,
-  }: IPagination, adminUser: UserEntity): Promise<PaginatedResource<ITopic>> {
+  public async getTopicsForReview(
+    { page, limit, size, offset }: IPagination,
+    adminUser: UserEntity,
+  ): Promise<PaginatedResource<ITopic>> {
     const order = getOrder({ direction: 'desc', property: 'createdAt' });
 
     if (adminUser.role === UserRole.ADMIN || adminUser.role === UserRole.MOD) {
-      throw new UnauthorizedException('You don`t have rights to review this article.');
+      throw new UnauthorizedException(
+        'You don`t have rights to review this article.',
+      );
     }
 
     const [result, total] = await this.topicsRepository.findAndCount({
@@ -139,18 +198,24 @@ export class TopicService {
       order,
       take: limit,
       skip: offset,
-      relations: ['author', 'hashtags', 'scores']
+      relations: ['author', 'hashtags', 'scores'],
     });
-
 
     return {
       totalItems: total,
       items: result,
       page,
-      size
-    }
+      size,
+    };
   }
-  
+
+  public async getAllTopics(): Promise<TopicEntity[]> {
+    return await this.topicsRepository.find({ relations: ['scores'] });
+  }
+
+  public async updateTopics(topics: TopicEntity[]): Promise<TopicEntity[]> {
+    return await this.topicsRepository.save(topics);
+  }
 
   // public async getNumberOfTopics(count: number): Promise<IPublicTopic[]> {
   //   const topics = await this.topicsRepository.find({

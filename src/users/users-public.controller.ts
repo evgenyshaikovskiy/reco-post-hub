@@ -1,10 +1,10 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserService } from './users.service';
 import { IUserProfile } from './interfaces/user.interface';
 
 @Controller('user')
 export class PublicUserController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get(':username')
   public async getUserProfile(@Param() params): Promise<IUserProfile> {

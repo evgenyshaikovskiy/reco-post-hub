@@ -6,6 +6,7 @@ import { JwtModule } from 'src/jwt/jwt.module';
 import { MailerModule } from 'src/mailer/mailer.module';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     UsersModule,
     JwtModule,
     MailerModule,
+    NotificationModule,
   ],
   providers: [AuthService],
   controllers: [AuthController],

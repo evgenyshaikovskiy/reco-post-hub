@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { BlacklistedTokenEntity } from './entities/blacklisted-token.entity';
 import { CommonService } from 'src/common/common.service';
-import { UsersService } from 'src/users/users.service';
+import { UserService } from 'src/users/users.service';
 import { JwtService } from 'src/jwt/jwt.service';
 import { MailerService } from 'src/mailer/mailer.service';
 import { UserEntity } from 'src/users/entities/user.entity';
@@ -30,7 +30,7 @@ export class AuthService {
     @InjectRepository(BlacklistedTokenEntity)
     private readonly blacklistedTokensRepository: Repository<BlacklistedTokenEntity>,
     private readonly commonService: CommonService,
-    private readonly usersService: UsersService,
+    private readonly usersService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
   ) {}

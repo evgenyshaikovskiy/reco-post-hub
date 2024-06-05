@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -74,6 +75,29 @@ export class HashtagService {
     hashtag.topics.push({ ...topic });
     await this.commonService.saveEntity(this.repository, hashtag, false);
     return hashtag;
+  }
+
+  public async removeTopicFromHashtagEntity(
+    id: string,
+    topicId: string,
+  ): Promise<HashtagEntity> {
+    const hashtag = await this.repository.findOne({
+      where: { id },
+      relations: ['topics'],
+    });
+
+    hashtag.topics = hashtag.topics.filter((topic) => topic.topicId !== topicId);
+    await this.commonService.saveEntity(this.repository, hashtag, false);
+
+    if (hashtag.topics.length === 0) {
+      await this.repository.remove([hashtag]);
+    }
+
+    return hashtag;
+  }
+
+  public async getHashtags(): Promise<HashtagEntity[]> {
+    return await this.repository.find({});
   }
 
   private async _checkHashtagNameUniqueness(name: string): Promise<void> {

@@ -1,4 +1,4 @@
-import { IsArray, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsString } from "class-validator";
 
 export abstract class CreateTopicDto {
   @IsString()
@@ -15,4 +15,9 @@ export abstract class CreateTopicDto {
 
   @IsArray()
   hashtags: string[];
+}
+
+export abstract class EditTopicDto {
+  @IsBoolean()
+  published: boolean;
 }

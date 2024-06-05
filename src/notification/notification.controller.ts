@@ -1,8 +1,12 @@
-import { Controller, Get, Param, Patch, UseInterceptors } from "@nestjs/common";
-import { AuthInterceptor } from "src/auth.interceptor";
-import { NotificationService } from "./notification.service";
-import { GetUser } from "src/user.decorator";
-import { UserEntity } from "src/users/entities/user.entity";
+import { Controller, Get, Param, Patch, UseInterceptors } from '@nestjs/common';
+import { AuthInterceptor } from 'src/auth.interceptor';
+import { NotificationService } from './notification.service';
+import { GetUser } from 'src/user.decorator';
+import { UserEntity } from 'src/users/entities/user.entity';
+import {
+  IPagination,
+  PaginationParams,
+} from 'src/common/utils/pagination.util';
 
 @UseInterceptors(AuthInterceptor)
 @Controller('notification')

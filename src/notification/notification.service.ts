@@ -4,7 +4,14 @@ import { NotificationEntity } from './notification.entity';
 import { Repository } from 'typeorm';
 import { CreateNotificationDto } from './dto/create.dto';
 import { CommonService } from 'src/common/common.service';
-import { UsersService } from 'src/users/users.service';
+import { UserService } from 'src/users/users.service';
+import {
+  IPagination,
+  PaginatedResource,
+} from 'src/common/utils/pagination.util';
+import { INotification } from './interfaces';
+import { ISorting } from 'src/common/utils/sorting.util';
+import { getOrder } from 'src/common/utils/other.utils';
 
 @Injectable()
 export class NotificationService {
@@ -12,7 +19,7 @@ export class NotificationService {
     @InjectRepository(NotificationEntity)
     private readonly notificationRepository: Repository<NotificationEntity>,
     private readonly commonService: CommonService,
-    private readonly userService: UsersService,
+    private readonly userService: UserService,
   ) {}
 
   public async create(dto: CreateNotificationDto): Promise<NotificationEntity> {
@@ -62,11 +69,14 @@ export class NotificationService {
 
   public async getAllNotificationsForUser(
     targetId: string,
-  ): Promise<NotificationEntity[]> {
-    const notifications = await this.notificationRepository.find({
+  ): Promise<INotification[]> {
+    const orderParam: ISorting = { property: 'createdAt', direction: 'desc' };
+    const order = getOrder(orderParam);
+    const items = await this.notificationRepository.find({
       where: { receiver: { id: targetId } },
+      order,
     });
 
-    return notifications;
+    return items;
   }
 }

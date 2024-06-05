@@ -9,7 +9,4 @@ export abstract class EditCommentDto {
 
   @IsString()
   htmlContent: string;
-
-  @IsArray()
-  mentionedProfileIds: string[];
 }

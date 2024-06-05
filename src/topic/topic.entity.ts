@@ -11,13 +11,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ITopic } from './interfaces/topic.interface';
-import { IsBoolean, IsNumber, IsString, MinLength } from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
 import { HashtagEntity } from 'src/hashtag/hashtag.entity';
-import { IHashtag } from 'src/hashtag/interfaces';
-import { IUser } from 'src/users/interfaces/user.interface';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { ScoreEntity } from 'src/score/score.entity';
 import { BookmarkEntity } from 'src/bookmark/bookmark.entity';
+import { CommentEntity } from 'src/comment/comment.entity';
 
 @Entity()
 @Unique(['topicId', 'url'])
@@ -30,6 +29,11 @@ export class TopicEntity implements ITopic {
     createForeignKeyConstraints: false,
   })
   author: UserEntity;
+
+  @OneToMany(() => CommentEntity, (comment) => comment.topic, {
+    onDelete: 'CASCADE',
+  })
+  comments: CommentEntity[];
 
   @Column({ type: 'varchar' })
   @IsString()
@@ -44,30 +48,33 @@ export class TopicEntity implements ITopic {
   @MinLength(100)
   textContent: string;
 
-  @Column({ type: 'boolean'})
-  @IsBoolean()
+  @Column({ type: 'boolean' })
   published: boolean;
 
-  @ManyToMany(() => HashtagEntity, (hashtag) => hashtag.topics, { eager: true })
+  @ManyToMany(() => HashtagEntity, (hashtag) => hashtag.topics, {
+    eager: true,
+    cascade: ['remove'],
+  })
   @JoinTable()
   hashtags: HashtagEntity[];
 
-  @OneToMany(() => BookmarkEntity, (bookmark) => bookmark.topic)
+  @OneToMany(() => BookmarkEntity, (bookmark) => bookmark.topic, {
+    onDelete: 'CASCADE',
+  })
   relatedBookmarks: BookmarkEntity[];
 
-  @OneToMany(() => ScoreEntity, (score) => score.topic)
+  @OneToMany(() => ScoreEntity, (score) => score.topic, {
+    onDelete: 'CASCADE',
+  })
   scores: ScoreEntity[];
 
-  @Column({type: 'numeric'})
-  @IsNumber()
+  @Column({ type: 'numeric' })
   totalScore: number;
 
   @Column({ type: 'varchar' })
-  @IsString()
   htmlContent: string;
 
   @Column({ type: 'varchar' })
-  @IsString()
   summarization: string;
 
   @CreateDateColumn()

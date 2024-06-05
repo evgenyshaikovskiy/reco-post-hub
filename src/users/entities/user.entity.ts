@@ -24,6 +24,7 @@ import { SettingsEmbeddable } from '../embeddables/settings.embeddable';
 import { NotificationEntity } from 'src/notification/notification.entity';
 import { INotification } from 'src/notification/interfaces';
 import { BookmarkEntity } from 'src/bookmark/bookmark.entity';
+import { CommentEntity } from 'src/comment/comment.entity';
 
 @Entity()
 export class UserEntity implements IUser {
@@ -83,24 +84,23 @@ export class UserEntity implements IUser {
   @Column({ type: 'varchar' })
   public userPictureId: string;
 
-  @OneToMany(() => SubscriptionEntity, (subscription) => subscription.actor, {
-    // eager: true,
-  })
+  @OneToMany(() => SubscriptionEntity, (subscription) => subscription.actor)
   public subscriptions: ISubscription[];
 
-  @OneToMany(() => TopicEntity, (topic) => topic.author, {
-    // eager: true,
-  })
+  @OneToMany(() => TopicEntity, (topic) => topic.author)
   public topics: ITopic[];
-
-  @Column({ type: 'enum', enum: UserRole })
-  public role: UserRole;
 
   @OneToMany(() => ScoreEntity, (score) => score.actor)
   public scores: ScoreEntity[];
 
   @OneToMany(() => BookmarkEntity, (bookmark) => bookmark.user)
   public bookmarks: BookmarkEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.author)
+  public comments: CommentEntity[];
+
+  @Column({ type: 'enum', enum: UserRole })
+  public role: UserRole;
 
   @CreateDateColumn()
   public createdAt: Date;

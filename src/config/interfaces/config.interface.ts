@@ -9,4 +9,5 @@ export interface IConfig {
   db: TypeOrmModuleOptions;
   jwt: IJwt;
   emailService: IEmailConfig;
+  huggingFaceToken: string;
 }

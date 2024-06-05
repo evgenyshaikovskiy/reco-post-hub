@@ -8,7 +8,11 @@ export enum EventType {
   // between user and hashtag
   SUBSCRIBE_TO_HASHTAG = 'subscribe-to-hashtag',
   UNSUBSCRIBE_FROM_HASHTAG = 'unsubscribe-from-hashtag',
-
+  // between user and topic
+  TOPIC_PUBLISHED = 'topic-published',
+  // between mod and topic
+  TOPIC_APPROVED = 'topic-approved',
+  // user and score
   ADD_SCORE = 'score-added',
   REMOVE_SCORE = 'score-removed',
   UPDATE_SCORE = 'update-score',

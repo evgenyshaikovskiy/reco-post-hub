@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BookmarkEntity } from './bookmark.entity';
 import { Repository } from 'typeorm';
 import { CommonService } from 'src/common/common.service';
-import { UsersService } from 'src/users/users.service';
+import { UserService } from 'src/users/users.service';
 import { TopicService } from 'src/topic/topic.service';
 import { CreateBookmarkDto, IBookmark } from './bookmark.interface';
 import { IUser } from 'src/users/interfaces/user.interface';
@@ -24,7 +24,7 @@ export class BookmarkService {
     @InjectRepository(BookmarkEntity)
     private readonly repository: Repository<BookmarkEntity>,
     private readonly commonService: CommonService,
-    private readonly userService: UsersService,
+    private readonly userService: UserService,
     private readonly topicService: TopicService,
   ) {}
 

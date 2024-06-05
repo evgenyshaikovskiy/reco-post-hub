@@ -38,10 +38,6 @@ export class ScoreService {
 
     const topic = await this.topicsService.getTopicById(topicId);
 
-    console.log(topic);
-    console.log(topicId);
-    console.log(user);
-
     if (!topic) {
       throw new BadRequestException('Topic not found!');
     }
@@ -51,8 +47,6 @@ export class ScoreService {
       score: score,
       topic: topic,
     });
-
-    console.log(entity);
 
     await this.commonService.saveEntity(this.repository, entity, true);
     await this.eventService.create({

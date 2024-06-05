@@ -19,7 +19,8 @@ export class HashtagEntity implements IHashtag {
   @Column({ type: 'varchar' })
   name: string;
 
-  @ManyToMany(() => TopicEntity, (topic) => topic.hashtags)
-  @JoinTable()
+  @ManyToMany(() => TopicEntity, (topic) => topic.hashtags, {
+    cascade: false,
+  })
   topics: TopicEntity[];
 }

@@ -7,14 +7,14 @@ import {
 } from '@nestjs/common';
 import { from, map, Observable, switchMap, tap } from 'rxjs';
 import { JwtService } from './jwt/jwt.service';
-import { UsersService } from './users/users.service';
+import { UserService } from './users/users.service';
 import { TokenTypeEnum } from './jwt/enums/token-type.enum';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly usersService: UsersService,
+    private readonly usersService: UserService,
   ) {}
 
   async intercept(

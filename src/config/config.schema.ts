@@ -6,6 +6,7 @@ export const validationSchema = Joi.object({
   PORT: Joi.number().required(),
   DOMAIN: Joi.string().required(),
   DB_URL: Joi.string().required(),
+  HUGGING_FACE_TOKEN: Joi.string().required(),
   DB_PORT: Joi.number().required(),
   DB_USERNAME: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
