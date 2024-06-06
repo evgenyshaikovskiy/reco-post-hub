@@ -163,7 +163,7 @@ export class TopicService {
   public async getTopics(
     { page, limit, size, offset }: IPagination,
     sort?: ISorting,
-    filter?: IFiltering,
+    filter?: IFiltering[],
   ): Promise<PaginatedResource<ITopic>> {
     const where = getWhere(filter);
     const order = getOrder(sort);
@@ -179,34 +179,18 @@ export class TopicService {
     return { totalItems: total, items: result, page, size };
   }
 
-  public async getTopicsForReview(
-    { page, limit, size, offset }: IPagination,
-    adminUser: UserEntity,
-  ): Promise<PaginatedResource<ITopic>> {
-    const order = getOrder({ direction: 'desc', property: 'createdAt' });
-
-    if (adminUser.role === UserRole.ADMIN || adminUser.role === UserRole.MOD) {
-      throw new UnauthorizedException(
-        'You don`t have rights to review this article.',
-      );
-    }
-
-    const [result, total] = await this.topicsRepository.findAndCount({
-      where: {
-        published: false,
-      },
-      order,
-      take: limit,
-      skip: offset,
-      relations: ['author', 'hashtags', 'scores'],
+  public async getTopicsWithHashtags(
+    hashtags: string[],
+  ): Promise<ITopic[]> {
+    const allTopics = await this.topicsRepository.find({
+      relations: ['author', 'hashtags'],
     });
 
-    return {
-      totalItems: total,
-      items: result,
-      page,
-      size,
-    };
+    const topicWithHashtags = allTopics.filter((topic) =>
+      topic.hashtags.map((hs) => hs.name).some((hs) => hashtags.includes(hs)),
+    );
+
+    return topicWithHashtags;
   }
 
   public async getAllTopics(): Promise<TopicEntity[]> {

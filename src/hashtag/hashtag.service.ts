@@ -10,6 +10,13 @@ import { Repository } from 'typeorm';
 import { CommonService } from 'src/common/common.service';
 import { CreateHashtagDto } from './dtos';
 import { TopicEntity } from 'src/topic/topic.entity';
+import {
+  IPagination,
+  PaginatedResource,
+} from 'src/common/utils/pagination.util';
+import { IFiltering } from 'src/common/utils/filter.util';
+import { IHashtag } from './interfaces';
+import { getWhere } from 'src/common/utils/other.utils';
 
 @Injectable()
 export class HashtagService {
@@ -86,7 +93,9 @@ export class HashtagService {
       relations: ['topics'],
     });
 
-    hashtag.topics = hashtag.topics.filter((topic) => topic.topicId !== topicId);
+    hashtag.topics = hashtag.topics.filter(
+      (topic) => topic.topicId !== topicId,
+    );
     await this.commonService.saveEntity(this.repository, hashtag, false);
 
     if (hashtag.topics.length === 0) {
@@ -94,6 +103,25 @@ export class HashtagService {
     }
 
     return hashtag;
+  }
+
+  public async getHashtagByName(name: string): Promise<HashtagEntity> {
+    return await this.repository.findOne({ where: { name }, relations: ['topics'] });
+  }
+
+  public async getHashtagsPaginated(
+    { page, limit, size, offset }: IPagination,
+    filter?: IFiltering[],
+  ): Promise<PaginatedResource<IHashtag>> {
+    const where = getWhere(filter);
+
+    const [result, total] = await this.repository.findAndCount({
+      where,
+      take: limit,
+      skip: offset,
+    });
+
+    return { totalItems: total, items: result, page, size };
   }
 
   public async getHashtags(): Promise<HashtagEntity[]> {

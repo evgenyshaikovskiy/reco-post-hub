@@ -44,12 +44,27 @@ export class TopicPublicController {
     @PaginationParams() paginationParams: IPagination,
     @SortingParams(['createdAt', 'title', 'totalScore'])
     sortingParams?: ISorting,
-    @FilteringParams([ 'createdAt', 'title', 'summarization', 'textContent', 'published', 'totalScore'])
-    filteringParams?: IFiltering) {
+    @FilteringParams([
+      'createdAt',
+      'title',
+      'summarization',
+      'textContent',
+      'published',
+      'totalScore',
+    ])
+    filteringParams?: IFiltering[],
+  ) {
     return await this.topicService.getTopics(
       paginationParams,
       sortingParams,
       filteringParams,
+    );
+  }
+
+  @Get('hashtags/:hashtags')
+  public async getTopicsWithHashtags(@Param() params: { hashtags: string }) {
+    return await this.topicService.getTopicsWithHashtags(
+      params.hashtags.split('&'),
     );
   }
 }

@@ -28,31 +28,46 @@ export enum FilterRule {
 }
 
 export const FilteringParams = createParamDecorator(
-  (data, ctx: ExecutionContext): IFiltering => {
+  (data, ctx: ExecutionContext): IFiltering[] => {
     const req: Request = ctx.switchToHttp().getRequest();
     const filter = req.query.filter as string;
     if (!filter) return null;
 
-    // convert to multiple filters at once
-
     if (typeof data != 'object')
       throw new BadRequestException('Invalid filter parameter');
 
-    if (
-      !filter.match(
-        /^[a-zA-Z0-9_]+:(eq|neq|gt|gte|lt|lte|like|nlike|in|nin):[a-zA-Z0-9_,]+$/,
-      ) &&
-      !filter.match(/^[a-zA-Z0-9_]+:(isnull|isnotnull)$/)
-    ) {
-      throw new BadRequestException('Invalid filter parameter');
+    const filters = filter.split(';');
+
+    for (let value of filters) {
+      if (value === '') continue;
+
+      if (
+        !value.match(
+          /^[a-zA-Z0-9_]+:(eq|neq|gt|gte|lt|lte|like|nlike|in|nin):[a-zA-Z0-9_,]+$/,
+        ) &&
+        !value.match(/^[a-zA-Z0-9_]+:(isnull|isnotnull)$/)
+      ) {
+        throw new BadRequestException(`Invalid filter parameter ${value}`);
+      }
     }
 
-    const [property, rule, value] = filter.split(':');
-    if (!data.includes(property))
-      throw new BadRequestException(`Invalid filter property: ${property}`);
-    if (!Object.values(FilterRule).includes(rule as FilterRule))
-      throw new BadRequestException(`Invalid filter rule: ${rule}`);
+    let ifilters: IFiltering[] = [];
 
-    return { property, rule, value };
+    for (let filterit of filters) {
+      const [property, rule, value] = filterit.split(':');
+
+      if (filterit === '') {
+        continue;
+      }
+
+      if (!data.includes(property))
+        throw new BadRequestException(`Invalid filter property: ${property}`);
+      if (!Object.values(FilterRule).includes(rule as FilterRule))
+        throw new BadRequestException(`Invalid filter rule: ${rule}`);
+
+      ifilters.push({ property, rule, value });
+    }
+
+    return ifilters;
   },
 );

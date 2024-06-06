@@ -14,32 +14,38 @@ import { ISorting } from './sorting.util';
 export const getOrder = (sort: ISorting) =>
   sort ? { [sort.property]: sort.direction } : {};
 
-export const getWhere = (filter: IFiltering) => {
-  if (!filter) return {};
+export const getWhere = (filters: IFiltering[]) => {
+  let clauses = {};
+  for (let filter of filters) {
+    if (!filter) continue;
 
-  if (filter.rule == FilterRule.IS_NULL) return { [filter.property]: IsNull() };
-  if (filter.rule == FilterRule.IS_NOT_NULL)
-    return { [filter.property]: Not(IsNull()) };
-  if (filter.rule == FilterRule.EQUALS)
-    return { [filter.property]: filter.value };
-  if (filter.rule == FilterRule.NOT_EQUALS)
-    return { [filter.property]: Not(filter.value) };
-  if (filter.rule == FilterRule.GREATER_THAN)
-    return { [filter.property]: MoreThan(filter.value) };
-  if (filter.rule == FilterRule.GREATER_THAN_OR_EQUALS)
-    return { [filter.property]: MoreThanOrEqual(filter.value) };
-  if (filter.rule == FilterRule.LESS_THAN)
-    return { [filter.property]: LessThan(filter.value) };
-  if (filter.rule == FilterRule.LESS_THAN_OR_EQUALS)
-    return { [filter.property]: LessThanOrEqual(filter.value) };
-  if (filter.rule == FilterRule.LIKE)
-    return { [filter.property]: ILike(`%${filter.value}%`) };
-  if (filter.rule == FilterRule.NOT_LIKE)
-    return { [filter.property]: Not(ILike(`%${filter.value}%`)) };
-  if (filter.rule == FilterRule.IN)
-    return { [filter.property]: In(filter.value.split(',')) };
-  if (filter.rule == FilterRule.NOT_IN)
-    return { [filter.property]: Not(In(filter.value.split(','))) };
+    if (filter.rule == FilterRule.IS_NULL)
+      clauses = { ...clauses, [filter.property]: IsNull() };
+    if (filter.rule == FilterRule.IS_NOT_NULL)
+      clauses = { ...clauses, [filter.property]: Not(IsNull()) };
+    if (filter.rule == FilterRule.EQUALS)
+      clauses = {...clauses, [filter.property]: filter.value}
+    if (filter.rule == FilterRule.NOT_EQUALS)
+      clauses = {...clauses, [filter.property]: Not(filter.value) };
+    if (filter.rule == FilterRule.GREATER_THAN)
+      clauses = {...clauses, [filter.property]: MoreThan(filter.value)};
+    if (filter.rule == FilterRule.GREATER_THAN_OR_EQUALS)
+      clauses = {...clauses, [filter.property]: MoreThanOrEqual(filter.value)};
+    if (filter.rule == FilterRule.LESS_THAN)
+      clauses = {...clauses, [filter.property]: LessThan(filter.value)};
+    if (filter.rule == FilterRule.LESS_THAN_OR_EQUALS)
+      clauses = {...clauses,[filter.property]: LessThanOrEqual(filter.value) };
+    if (filter.rule == FilterRule.LIKE)
+      clauses = {...clauses, [filter.property]: ILike(`%${filter.value}%`)};
+    if (filter.rule == FilterRule.NOT_LIKE)
+      clauses = {...clauses, [filter.property]: Not(ILike(`%${filter.value}%`))};
+    if (filter.rule == FilterRule.IN)
+      clauses = {...clauses, [filter.property]: In(filter.value.split(','))};
+    if (filter.rule == FilterRule.NOT_IN)
+      clauses = {...clauses, [filter.property]: Not(In(filter.value.split(',')))};
+  }
+
+  return clauses;
 };
 
 // const targetKeys = Object.keys(targetInterface) as (keyof U)[];
