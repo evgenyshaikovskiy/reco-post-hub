@@ -11,12 +11,14 @@ import { UserEntity } from 'src/users/entities/user.entity';
 import { EventModule } from 'src/event/event.module';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationModule } from 'src/notification/notification.module';
+import { TopicModule } from 'src/topic/topic.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([SubscriptionEntity, UserEntity]),
     HashtagModule,
     UsersModule,
+    TopicModule,
     JwtModule,
     EventModule,
     NotificationModule,

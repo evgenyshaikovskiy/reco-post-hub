@@ -11,6 +11,9 @@ import { EventService } from 'src/event/event.service';
 import { EventType } from 'src/event/interfaces';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationType } from 'src/notification/notification.enum';
+import { TopicEntity } from 'src/topic/topic.entity';
+import { HashtagEntity } from 'src/hashtag/hashtag.entity';
+import { TopicService } from 'src/topic/topic.service';
 
 @Injectable()
 export class SubscriptionService {
@@ -20,6 +23,8 @@ export class SubscriptionService {
     private readonly commonService: CommonService,
     private readonly eventService: EventService,
     private readonly notificationService: NotificationService,
+    private readonly hashtagService: HashtagService,
+    private readonly topicService: TopicService,
   ) {}
 
   public async create(
@@ -70,6 +75,45 @@ export class SubscriptionService {
     });
 
     return subscriptions;
+  }
+
+  public async getHashtagsSubscriptionsEnd(
+    user: UserEntity,
+  ): Promise<HashtagEntity[]> {
+    const subscriptions = await this.repository.find({
+      where: [
+        {
+          actor: {
+            id: user.id,
+          },
+          type: SubscriptionType.TO_HASHTAG,
+        },
+      ],
+    });
+
+    const subId = subscriptions.map((sub) => sub.targetId);
+    const hashtags = await this.hashtagService.getHashtags();
+    return hashtags.filter((hs) => subId.includes(hs.id));
+  }
+
+  public async getUsersSubscriptionsEnd(
+    user: UserEntity,
+  ): Promise<TopicEntity[]> {
+    const subscriptions = await this.repository.find({
+      where: [
+        {
+          actor: {
+            id: user.id,
+          },
+          type: SubscriptionType.TO_USER,
+        },
+      ],
+    });
+
+    const subId = subscriptions.map((sub) => sub.targetId);
+    const topics = await this.topicService.getAllTopics();
+
+    return topics.filter((topic) => subId.includes(topic.author.id));
   }
 
   public async getHashtagsSubscriptions(

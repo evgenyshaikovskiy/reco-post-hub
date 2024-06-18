@@ -19,7 +19,7 @@ import { TopicEntity } from 'src/topic/topic.entity';
 import { ITopic } from 'src/topic/interfaces/topic.interface';
 
 @Entity()
-@Tree('nested-set')
+@Tree('materialized-path')
 @Unique(['id'])
 export class CommentEntity implements IComment {
   @PrimaryGeneratedColumn('uuid')

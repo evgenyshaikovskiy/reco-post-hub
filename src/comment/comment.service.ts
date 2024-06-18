@@ -147,9 +147,11 @@ export class CommentService {
 
     const comments = await Promise.all(
       topLevelComments.map((comment) =>
-        treeRepo.findDescendantsTree(comment, { relations: ['author'] }),
+        treeRepo.findDescendantsTree(comment, { relations: ['author', 'childComments'] }),
       ),
     );
+
+    console.log(comments);
 
     return comments;
   }

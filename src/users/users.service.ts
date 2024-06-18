@@ -59,10 +59,34 @@ export class UserService {
 
   public async findProfileByUsername(username: string): Promise<IUserProfile> {
     const user = await this.usersRepository.findOne({
-      where: { username },
+      where: { username }
     });
+
     this.commonService.checkEntityExistence(user, 'User');
-    return user as IUserProfile;
+
+    const rels = [];
+    const fetchComments = false;
+    const fetchSubs = false;
+    const fetchScores = false;
+
+    if (user.settings.showComments) {
+      rels.push('comments');
+    }
+
+    if (user.settings.showHashtagSubscriptions || user.settings.showUserSubscriptions) {
+      rels.push('subscriptions');
+    }
+
+    if (user.settings.showScores) {
+      rels.push('scores');
+    }
+
+    const updatedUser = await this.usersRepository.findOne({
+      where: { username },
+      relations: [...rels]
+    });
+
+    return updatedUser as IUserProfile;
   }
 
   public async findOneById(id: string): Promise<UserEntity> {

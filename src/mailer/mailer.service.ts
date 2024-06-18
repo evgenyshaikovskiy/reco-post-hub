@@ -56,7 +56,7 @@ export class MailerService {
     // TODO: change localhost to suitable domain
     const html = this.templates.resetPassword({
       name,
-      link: `localhost:5000/auth/reset-password/${token}`,
+      link: `https://localhost:4200/forgot-password/reset/${token}`,
     });
     this.sendEmail(email, subject, html, 'A new reset password was sent');
   }

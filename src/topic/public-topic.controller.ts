@@ -67,4 +67,11 @@ export class TopicPublicController {
       params.hashtags.split('&'),
     );
   }
+
+  @Get('author/:authors')
+  public async getTopicsWithAuthors(@Param() params: { authors: string }) {
+    return await this.topicService.getTopicsWithAuthors(
+      params.authors.split('&'),
+    );
+  }
 }

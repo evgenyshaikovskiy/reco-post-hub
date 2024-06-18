@@ -28,7 +28,7 @@ export class TopicController {
 
   @Post()
   public async createTopic(
-    @Body() dto: CreateTopicDto,
+    @Body() dto: CreateTopicDto,  
     @GetUser() user: UserEntity,
   ) {
     return await this.topicService.create(dto, user);

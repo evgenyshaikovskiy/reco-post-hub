@@ -54,6 +54,8 @@ export class ScoreService {
       receiverId: entity.id,
       type: EventType.ADD_SCORE,
     });
+
+    await this.topicsService.recalculateTopicScores(topicId);
     return entity;
   }
 
@@ -89,6 +91,8 @@ export class ScoreService {
       receiverId: scoreEntity.id,
       type: EventType.UPDATE_SCORE,
     });
+
+    await this.topicsService.recalculateTopicScores(scoreEntity.topic.topicId);
 
     return scoreEntity;
   }

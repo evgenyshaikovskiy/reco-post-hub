@@ -40,8 +40,10 @@ export class AuthInterceptor implements NestInterceptor {
       throw new UnauthorizedException();
     }
 
+    console.log('SEARCHING USER');
     const user = await this.usersService.findOneByEmail(verified.sub);
-
+    console.log('FINISHED');
+    
     if (user) {
       request.body['user_interceptor'] = user;
     }

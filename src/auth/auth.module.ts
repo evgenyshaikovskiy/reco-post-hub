@@ -7,6 +7,7 @@ import { MailerModule } from 'src/mailer/mailer.module';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationModule } from 'src/notification/notification.module';
+import { ValidatorController } from './validator.controller';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { NotificationModule } from 'src/notification/notification.module';
     NotificationModule,
   ],
   providers: [AuthService],
-  controllers: [AuthController],
+  controllers: [AuthController, ValidatorController],
 })
 export class AuthModule {}

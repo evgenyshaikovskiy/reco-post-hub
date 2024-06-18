@@ -20,6 +20,7 @@ export class UserController {
 
   @Get()
   public async currentUser(@GetUser() user: UserEntity) {
+    console.log(user);
     return user;
   }
 }

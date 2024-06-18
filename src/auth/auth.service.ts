@@ -23,6 +23,7 @@ import { isNull, isUndefined } from 'src/common/utils/validation.util';
 import { ChangePasswordDto } from './dtos/change-password.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { IEmailToken } from 'src/jwt/interfaces/email-token.interface';
 
 @Injectable()
 export class AuthService {
@@ -127,20 +128,29 @@ export class AuthService {
       this.mailerService.sendResetPasswordEmail(user, resetToken.token);
     }
 
-    return this.commonService.generateMessage('Reset password email sent');
+    return this.commonService.generateMessage('Reset password email was sent.');
   }
 
-  // TODO: add dto and refactor method logic
-  // public async resetPassword(dto: ResetPasswordDto): Promise<IMessage> {
-  //   const { password, passwordConfirmation, resetToken } = dto;
-  //   const { id, version } = await this.jwtService.verifyToken<IEmailToken>(
-  //     resetToken,
-  //     TokenTypeEnum.RESET_PASSWORD,
-  //   );
-  //   this._comparePasswords(password, passwordConfirmation);
-  //   await this.usersService.resetPassword(id, version, password);
-  //   return this.commonService.generateMessage('Password reset successful');
-  // }
+  public async resetPassword(dto): Promise<IMessage> {
+    const { password, passwordConfirmation, resetToken } = dto;
+    const { id, version } = await this.jwtService.verifyToken<IEmailToken>(
+      resetToken,
+      TokenTypeEnum.RESET_PASSWORD,
+    );
+    this._comparePasswords(password, passwordConfirmation);
+    await this.usersService.resetPassword(id, version, password);
+    return this.commonService.generateMessage('Password reset successful');
+  }
+
+  public async checkEmailExists(email: string): Promise<boolean> {
+    try {
+      const user = await this.usersService.findOneByEmail(email);
+      return true;
+    }
+    catch (error) {
+      return false;
+    }
+  }
 
   public async changePassword(
     userId: string,

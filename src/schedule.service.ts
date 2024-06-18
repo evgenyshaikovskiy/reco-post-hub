@@ -22,30 +22,6 @@ export class ScheduleService {
     private readonly notificationService: NotificationService,
   ) {}
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
-  async handleUpdateOfScore() {
-    this.logger.log('Begin recalculation of totalScore for topics');
-    const topics = await this.topicService.getAllTopics();
-    const updatedTopics = topics.map((topic) =>
-      this.recalculateTopicScore(topic),
-    );
-
-    await this.topicService.updateTopics(updatedTopics);
-    this.logger.log('Recalculated totalScore for topics');
-  }
-
-  private recalculateTopicScore(topic: TopicEntity): TopicEntity {
-    const totalOfScores = topic.scores
-      .map((score) => +score.score)
-      .reduce((acc, prev) => acc + prev, 0);
-    const countOfScores = topic.scores.length;
-    const average = totalOfScores / countOfScores;
-    this.logger.log(
-      `For topic ${topic.title} with total scores: ${totalOfScores} and number of scores ${countOfScores}`,
-    );
-    return { ...topic, totalScore: average };
-  }
-
   @Cron(CronExpression.EVERY_12_HOURS)
   async handleUpdateOfUserData() {
     this.logger.log('Begin recalculation of karma and ratings for all users');

@@ -79,6 +79,14 @@ export class HashtagSimilarityService {
     return hashtags;
   }
 
+  public async getAll(): Promise<HashtagSimilarityEntity[]> {
+    const all = await this.repository.find({
+      relations: ['hashtag'],
+    });
+
+    return all;
+  }
+
   public async getPersonalizedRecommendations(
     user: UserEntity,
   ): Promise<HashtagEntity[]> {

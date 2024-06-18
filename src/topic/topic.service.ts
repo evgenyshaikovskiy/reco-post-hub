@@ -105,6 +105,7 @@ export class TopicService {
     topic.published = published;
 
     if (published) {
+      // create notification for each subscriber
       await this.notificationService.create({
         targetId: topic.author.id,
         text: 'Your topic was published!',
@@ -193,12 +194,41 @@ export class TopicService {
     return topicWithHashtags;
   }
 
+  public async getTopicsWithAuthors(authors: string[]): Promise<ITopic[]> {
+    const allTopics = await this.topicsRepository.find({
+      relations: ['author', 'hashtags'],
+    });
+
+    const topicWithAuthor = allTopics.filter((topic) => authors.includes(topic.author.username));
+    return topicWithAuthor;
+  }
+
   public async getAllTopics(): Promise<TopicEntity[]> {
-    return await this.topicsRepository.find({ relations: ['scores'] });
+    return await this.topicsRepository.find({ relations: ['author', 'hashtags', 'scores'] });
   }
 
   public async updateTopics(topics: TopicEntity[]): Promise<TopicEntity[]> {
     return await this.topicsRepository.save(topics);
+  }
+
+  public async recalculateTopicScores(topicId: string): Promise<void> {
+    const topic = await this.topicsRepository.findOne({
+      where: { topicId },
+      relations: ['scores'],
+    });
+
+    const totalOfScores = topic.scores
+      .map((score) => +score.score)
+      .reduce((acc, prev) => acc + prev, 0);
+    const countOfScores = topic.scores.length;
+    const average = totalOfScores / countOfScores;
+
+    const currentTotal = topic.totalScore;
+
+    if (currentTotal !== average) {
+      topic.totalScore = average;
+      return await this.commonService.saveEntity(this.topicsRepository, topic, false);
+    }
   }
 
   // public async getNumberOfTopics(count: number): Promise<IPublicTopic[]> {

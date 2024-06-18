@@ -6,6 +6,7 @@ import { RefreshTokenDto } from './dtos/refresh-token.dto';
 import { LogoutDto } from './dtos/log-out.dto';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationType } from 'src/notification/notification.enum';
+import { EmailDto } from './dtos/email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -28,6 +29,11 @@ export class AuthController {
   @Post('/refresh')
   public async refreshToken(@Body() dto: RefreshTokenDto) {
     return await this.authService.refreshTokenAccess(dto.refreshToken);
+  }
+
+  @Post('/reset-password')
+  public async resetPassword(@Body() dto: EmailDto) {
+    return await this.authService.resetPasswordEmail(dto);
   }
 
   @Get('/confirm/:token')

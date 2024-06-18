@@ -34,6 +34,11 @@ export class RecommendationService implements OnModuleInit {
   async updateUsersRecommendations() {
     this.logger.log('Begin reevaluation for all hashtags in database');
     const hashtags = await this.hashtagService.getHashtags();
+    const similarities = await this.hashtagSimilarityService.getAll();
+    if (similarities.length === hashtags.length) {
+      this.logger.log('Nothing to update...');
+      return;
+    }
     const inputs = this.prepareData(hashtags.map((hs) => hs.name));
 
     const results = await Promise.all(
